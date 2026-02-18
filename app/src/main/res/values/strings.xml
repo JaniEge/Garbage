@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">GarbageV1</string>
+    <string name="list_label">Garbage Sorting</string>
+    <string name="list_button_label">Show sorting List</string>
+    <string name="deleted_message">Deleted: %1$s</string>
+    <string name="undo">Undo</string>
+</resources>
