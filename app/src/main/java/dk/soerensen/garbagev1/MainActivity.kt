@@ -1,6 +1,8 @@
 package dk.soerensen.garbagev1
 
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -15,15 +17,22 @@ import dk.soerensen.garbagev1.ui.features.GarbageSortingScreen
 import dk.soerensen.garbagev1.ui.theme.GarbageV1Theme
 import javax.inject.Inject
 
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     @Inject
     lateinit var snackBarHandler: SnackBarHandler
+
+    private fun lifecycleDebug(event: String) {
+        Log.d("LIFECYCLE", event)
+        Toast.makeText(this, event, Toast.LENGTH_SHORT).show()
+    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        lifecycleDebug("onCreate()")
+
         enableEdgeToEdge()
 
         setContent {
@@ -32,18 +41,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
                         TopAppBar(
-                            title = {
-                                Text(stringResource(R.string.app_name))
-                            },
+                            title = { Text(stringResource(R.string.app_name)) },
                             colors = TopAppBarDefaults.topAppBarColors(
                                 containerColor = MaterialTheme.colorScheme.primaryContainer
                             )
                         )
                     },
                     snackbarHost = {
-                        SnackbarHost(
-                            hostState = snackBarHandler.snackBarHostState
-                        )
+                        SnackbarHost(hostState = snackBarHandler.snackBarHostState)
                     }
                 ) { innerPadding ->
                     GarbageSortingScreen(
@@ -53,5 +58,30 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        lifecycleDebug("onStart()")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        lifecycleDebug("onResume()")
+    }
+
+    override fun onPause() {
+        lifecycleDebug("onPause()")
+        super.onPause()
+    }
+
+    override fun onStop() {
+        lifecycleDebug("onStop()")
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        lifecycleDebug("onDestroy()")
+        super.onDestroy()
     }
 }

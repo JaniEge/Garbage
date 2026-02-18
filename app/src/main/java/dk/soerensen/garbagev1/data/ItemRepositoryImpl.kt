@@ -35,7 +35,7 @@ class ItemRepositoryImpl @Inject constructor(
                 }.toList()
             }
 
-        // Som i din V1: sorter én gang ved load
+
         return list.sortedBy { it.name.lowercase() }
     }
 
