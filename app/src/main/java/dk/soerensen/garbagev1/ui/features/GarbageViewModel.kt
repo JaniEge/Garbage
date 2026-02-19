@@ -91,7 +91,7 @@ class GarbageViewModel @Inject constructor(
             viewModelScope.launch {
                 _effects.send(
                     UiEffect.ShowSnackbar(
-                        message = "Deleted: ${item.name}",
+                        message = " ${item.name}",
                         actionLabel = "Undo"
                     )
                 )
