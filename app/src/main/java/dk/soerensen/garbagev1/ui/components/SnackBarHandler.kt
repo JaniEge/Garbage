@@ -14,7 +14,7 @@ import javax.inject.Singleton
 @Singleton
 class SnackBarHandler @Inject constructor(
     private val scope: CoroutineScope,
-    @param:ApplicationContext private val context: Context,
+    @ApplicationContext private val context: Context,
 ) {
 
     val snackBarHostState = SnackbarHostState()
