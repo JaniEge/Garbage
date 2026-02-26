@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dk.soerensen.garbagev1.R
 import dk.soerensen.garbagev1.domain.GarbageItem
 import dk.soerensen.garbagev1.domain.ItemRepository
+import dk.soerensen.garbagev1.ui.components.SnackBarHandler
 import dk.soerensen.garbagev1.ui.navigation.AddWhereDialogRoute
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddWhereViewModel @Inject constructor(
     private val itemRepository: ItemRepository,
+    private val snackBarHandler: SnackBarHandler,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -43,14 +46,20 @@ class AddWhereViewModel @Inject constructor(
             val name = what.trim()
 
             if (name.isNotBlank() && bin.isNotBlank()) {
-                // Add new item to the top (index 0)
                 itemRepository.add(
                     index = 0,
                     item = GarbageItem(name = name, bin = bin)
                 )
 
+                // ✅ Success besked
+                snackBarHandler.postMessage(
+                    msgRes = R.string.item_added_success,
+                    name
+                )
+
                 viewModelScope.launch {
-                    _navigationEvents.emit(NavigationEvent.CloseDialog)
+                    // Luk dialog + tilbage til listen (vi popper 2 gange i navigation)
+                    _navigationEvents.emit(NavigationEvent.CloseAndBackToList)
                 }
             } else {
                 _uiState.update { it.copy(isError = true) }
@@ -59,13 +68,13 @@ class AddWhereViewModel @Inject constructor(
 
         override fun onUpClick() {
             viewModelScope.launch {
-                _navigationEvents.emit(NavigationEvent.CloseDialog)
+                _navigationEvents.emit(NavigationEvent.CloseAndBackToList)
             }
         }
 
         override fun onCancelClick() {
             viewModelScope.launch {
-                _navigationEvents.emit(NavigationEvent.CloseDialog)
+                _navigationEvents.emit(NavigationEvent.CloseAndBackToList)
             }
         }
     }
@@ -85,5 +94,6 @@ class AddWhereViewModel @Inject constructor(
 
     sealed class NavigationEvent {
         data object CloseDialog : NavigationEvent()
+        data object CloseAndBackToList : NavigationEvent()
     }
 }

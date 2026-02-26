@@ -224,8 +224,13 @@ fun MainNavigation(
             AddWhereScreen(
                 onNavigate = { event ->
                     when (event) {
-                        is AddWhereViewModel.NavigationEvent.CloseDialog -> {
-                            navController.popBackStack()
+                        AddWhereViewModel.NavigationEvent.CloseDialog -> {
+                            navController.popBackStack() // luk dialog
+                        }
+
+                        AddWhereViewModel.NavigationEvent.CloseAndBackToList -> {
+                            navController.popBackStack() // 1) luk dialog
+                            navController.popBackStack() // 2) luk AddWhatRoute -> tilbage til listen
                         }
                     }
                 }
