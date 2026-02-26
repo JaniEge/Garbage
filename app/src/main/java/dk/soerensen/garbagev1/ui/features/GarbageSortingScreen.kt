@@ -75,11 +75,25 @@ fun GarbageSortingScreen(
                     Spacer(Modifier.height(12.dp))
                 }
 
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Button(onClick = viewModel::onWhereClicked) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Button(
+                        onClick = viewModel::onWhereClicked,
+                        modifier = Modifier
+                            .fillMaxWidth(0.6f)   // 60% af bredden
+                            .height(40.dp)        // lavere højde
+                    ) {
                         Text("Where")
                     }
-                    Button(onClick = viewModel::onListClicked) {
+
+                    Button(
+                        onClick = viewModel::onListClicked,
+                        modifier = Modifier
+                            .fillMaxWidth(0.6f)
+                            .height(40.dp)
+                    ) {
                         Text("List")
                     }
                 }
