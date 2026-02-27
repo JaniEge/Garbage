@@ -9,6 +9,13 @@ data class GarbageItem(
     val bin: String
 )
 
+data class Bin(
+    val id: String,
+    val title: String,
+    val description: String,
+    val imageUrl: String
+)
+
 fun GarbageItem.toDto(): GarbageItemDto =
     GarbageItemDto(
         id = id,
@@ -22,3 +29,4 @@ fun GarbageItem.toDto(): GarbageItemDto =
  */
 fun GarbageItem.fullDescription(): String =
     "${name.trim()} → ${bin.trim()}"
+
