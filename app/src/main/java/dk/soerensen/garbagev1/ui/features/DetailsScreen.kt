@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -46,6 +48,7 @@ fun DetailsScreen(
         DetailsContent(
             modifier = modifier,
             item = item,
+            showDeleteDialog = uiState.showDeleteDialog,
             uiEvents = viewModel.uiEvents
         )
     } ?: run {
@@ -66,6 +69,7 @@ fun DetailsScreen(
 @Composable
 private fun DetailsContent(
     item: GarbageItem,
+    showDeleteDialog: Boolean,
     uiEvents: DetailsViewModel.UiEvents,
     modifier: Modifier = Modifier,
 ) {
@@ -119,10 +123,28 @@ private fun DetailsContent(
                     contentDescription = null
                 )
 
-                Spacer(Modifier.height(height = 8.dp))
+                Spacer(Modifier.width(width = 8.dp))
 
                 Text(text = "Delete")
             }
         }
+    }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = uiEvents::onDismissDeleteClick,
+            title = { Text(text = "Delete item") },
+            text = { Text(text = "Are you sure you want to delete this item?") },
+            confirmButton = {
+                TextButton(onClick = uiEvents::onConfirmDeleteClick) {
+                    Text(text = "Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = uiEvents::onDismissDeleteClick) {
+                    Text(text = "Cancel")
+                }
+            }
+        )
     }
 }

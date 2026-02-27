@@ -1,19 +1,26 @@
 package dk.soerensen.garbagev1.data
 
-import dagger.Binds
+import android.content.Context
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import dk.soerensen.garbagev1.domain.BinRepository
 import dk.soerensen.garbagev1.domain.ItemRepository
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class DataBindingsModule {
+object DataModule {
 
-    @Binds
+    @Provides
     @Singleton
-    abstract fun bindItemRepository(
-        impl: ItemRepositoryImpl
-    ): ItemRepository
+    fun provideItemRepository(
+        @ApplicationContext context: Context
+    ): ItemRepository = ItemRepositoryImpl(context)
+
+    @Provides
+    @Singleton
+    fun provideBinRepository(): BinRepository = BinRepositoryImpl()
 }

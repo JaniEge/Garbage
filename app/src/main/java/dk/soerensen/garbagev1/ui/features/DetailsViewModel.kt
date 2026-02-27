@@ -7,7 +7,6 @@ import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.soerensen.garbagev1.domain.GarbageItem
 import dk.soerensen.garbagev1.domain.ItemRepository
-import dk.soerensen.garbagev1.ui.components.SnackBarHandler
 import dk.soerensen.garbagev1.ui.navigation.GarbageDetailsRoute
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,12 +18,10 @@ import kotlinx.coroutines.launch
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 import kotlin.let
-import dk.soerensen.garbagev1.R
 
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
     private val itemRepository: ItemRepository,
-    private val snackBarHandler: SnackBarHandler,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -65,23 +62,20 @@ class DetailsViewModel @Inject constructor(
         }
 
         override fun onDeleteClick() {
-            _uiState.value.selectedItem?.let { item ->
-                val removedIndex = itemRepository.remove(item)
+            // v2.2: Show confirm dialog instead of snackbar undo
+            _uiState.update { it.copy(showDeleteDialog = true) }
+        }
 
-                snackBarHandler.postMessage(
-                    msgRes = R.string.deleted_message,
-                    item.name,
-                    actionLabelRes = R.string.undo,
-                    onActionClick = {
-                        itemRepository.add(removedIndex, item)
-                        snackBarHandler.postMessage(
-                            msgRes = R.string.undo_success,
-                            item.name
-                        )
-                    }
-                )
+        override fun onConfirmDeleteClick() {
+            _uiState.value.selectedItem?.let { item ->
+                itemRepository.remove(item)
             }
+            _uiState.update { it.copy(showDeleteDialog = false) }
             onUpClick()
+        }
+
+        override fun onDismissDeleteClick() {
+            _uiState.update { it.copy(showDeleteDialog = false) }
         }
 
         override fun onUpClick() {
@@ -91,7 +85,10 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-    data class UiState(val selectedItem: GarbageItem? = null)
+    data class UiState(
+        val selectedItem: GarbageItem? = null,
+        val showDeleteDialog: Boolean = false,
+    )
 
     @Immutable
     interface UiEvents {
@@ -99,6 +96,10 @@ class DetailsViewModel @Inject constructor(
         fun onBinChange(bin: String)
         fun onSaveClick()
         fun onDeleteClick()
+
+        fun onConfirmDeleteClick()
+        fun onDismissDeleteClick()
+
         fun onUpClick()
     }
 
