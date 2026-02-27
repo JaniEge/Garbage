@@ -50,7 +50,7 @@ fun GarbageListScreen(
         viewModel.navigationEvents.collect { onNavigate(it) }
     }
 
-    // ✅ Ensure background matches theme
+
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background

@@ -7,9 +7,7 @@ import dk.soerensen.garbagev1.domain.Bin
 import dk.soerensen.garbagev1.domain.GarbageItem
 import java.util.UUID
 
-/**
- * Preview data for Recycling bins (used for carousel + details sheet)
- */
+
 class BinProvider : PreviewParameterProvider<Bin> {
     override val values = sequenceOf(
         Bin("food", "Food waste", "Leftovers, fruit and vegetable scraps.", "https://via.placeholder.com/600x400.png?text=Food+bin+label"),
@@ -27,9 +25,7 @@ class BinOrNullProvider : PreviewParameterProvider<Bin?> {
     )
 }
 
-/**
- * Preview data for items in the Sorting list
- */
+
 class GarbageItemProvider : PreviewParameterProvider<GarbageItem> {
     override val values = sequenceOf(
         GarbageItem(UUID.randomUUID().toString(), "Banana peel", "Food waste"),
@@ -63,9 +59,6 @@ fun previewGarbageItems() = listOf(
     GarbageItem(UUID.randomUUID().toString(), "Soda can", "Metal"),
 )
 
-/**
- * Light/Dark preview annotation
- */
 @Preview(name = "Light Mode", uiMode = Configuration.UI_MODE_NIGHT_NO, showBackground = true)
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 annotation class ThemedPreviews

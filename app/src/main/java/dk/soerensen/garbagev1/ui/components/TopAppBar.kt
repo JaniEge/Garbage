@@ -51,7 +51,7 @@ fun AppTopBar(
                 }
             }
         },
-        // Theme colors (match across app)
+
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,
             titleContentColor = MaterialTheme.colorScheme.onPrimary,

@@ -62,7 +62,7 @@ class DetailsViewModel @Inject constructor(
         }
 
         override fun onDeleteClick() {
-            // v2.2: Show confirm dialog instead of snackbar undo
+            // Show confirm dialog instead of snackbar undo
             _uiState.update { it.copy(showDeleteDialog = true) }
         }
 

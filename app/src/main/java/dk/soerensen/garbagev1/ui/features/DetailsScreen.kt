@@ -52,7 +52,7 @@ fun DetailsScreen(
             uiEvents = viewModel.uiEvents
         )
     } ?: run {
-        // simpel loading state
+
         Column(
             modifier = modifier
                 .fillMaxSize()
