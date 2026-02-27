@@ -22,7 +22,7 @@ class GarbageListViewModel @Inject constructor(
     private val binRepository: BinRepository,
 ) : ViewModel() {
 
-    // ✅ Map bin ID -> imageUrl (stable keys: paper/cardboard/food_drink_cartons)
+
     private val binImageUrls: Map<String, String> =
         binRepository.getBins().associate { bin ->
             bin.id.trim().lowercase() to bin.imageUrl

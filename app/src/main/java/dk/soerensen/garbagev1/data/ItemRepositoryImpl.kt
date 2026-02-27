@@ -79,7 +79,6 @@ class ItemRepositoryImpl @Inject constructor(
             ?.bin
     }
 
-    // Krævet af opgaven: slå et item op via id (Flow)
     override fun getItem(id: String): Flow<GarbageItem?> {
         val q = id.trim()
         return items.map { list ->
@@ -87,7 +86,6 @@ class ItemRepositoryImpl @Inject constructor(
         }
     }
 
-    // Krævet af opgaven: opdatér et item via id
     override suspend fun updateItem(item: GarbageItem) {
         _items.update { current ->
             val index = current.indexOfFirst { it.id == item.id }

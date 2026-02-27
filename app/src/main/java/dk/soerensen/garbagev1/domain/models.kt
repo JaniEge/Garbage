@@ -23,10 +23,6 @@ fun GarbageItem.toDto(): GarbageItemDto =
         bin = bin
     )
 
-/**
- * Ligner Shopping's fullDescription(), men til Garbage.
- * Praktisk til DetailScreen / UI tekst.
- */
 fun GarbageItem.fullDescription(): String =
     "${name.trim()} → ${bin.trim()}"
 

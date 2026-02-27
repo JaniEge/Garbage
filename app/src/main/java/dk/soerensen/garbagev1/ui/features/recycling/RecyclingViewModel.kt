@@ -20,7 +20,6 @@ class RecyclingViewModel @Inject constructor(
     val bins: StateFlow<List<Bin>> = _bins.asStateFlow()
 
     init {
-        // Hvis getBins() er synkron (returnerer List<Bin>)
         _bins.value = binRepository.getBins()
     }
 }
