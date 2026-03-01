@@ -37,6 +37,10 @@ import coil.compose.AsyncImage
 import dk.soerensen.garbagev1.domain.Bin
 import dk.soerensen.garbagev1.ui.components.AppTopBar
 import dk.soerensen.garbagev1.ui.components.NavigationType
+import android.util.Log
+import coil.request.ImageRequest
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.Alignment
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -91,13 +95,17 @@ fun RecyclingScreen(
                             Text(bin.title, style = MaterialTheme.typography.titleMedium)
                             Spacer(Modifier.height(8.dp))
 
-                            // ✅ FORCE size so it can't measure to 0
                             AsyncImage(
-                                model = bin.imageUrl,
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(bin.imageUrl)
+                                    .listener(
+                                        onError = { _, result -> Log.e("Coil", "Error: ${result.throwable}") }
+                                    )
+                                    .build(),
                                 contentDescription = "${bin.title} label",
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(90.dp),
+                                    .size(90.dp)  // kvadratisk - samme bredde og højde
+                                    .align(Alignment.CenterHorizontally),
                                 contentScale = ContentScale.Crop
                             )
 

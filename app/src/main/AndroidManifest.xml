@@ -4,6 +4,7 @@
     <!-- Required for loading images from the internet (Coil) -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+
     <application
         android:name=".GarbageSortingApplication"
         android:allowBackup="true"
