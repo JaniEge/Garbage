@@ -13,7 +13,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import dk.soerensen.garbagev1.domain.Bin
-
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.size
 @Composable
 fun BinDetailsSheet(bin: Bin) {
     Column(modifier = Modifier.padding(16.dp)) {
@@ -24,9 +25,9 @@ fun BinDetailsSheet(bin: Bin) {
             model = bin.imageUrl,
             contentDescription = "${bin.title} label",
             modifier = Modifier
-                .fillMaxWidth()
-                .height(180.dp),
-            contentScale = ContentScale.Crop
+                .size(200.dp)  // kvadratisk
+                .align(Alignment.CenterHorizontally),
+            contentScale = ContentScale.Fit  // Fit så hele billedet vises uden crop
         )
 
         Spacer(Modifier.height(12.dp))
