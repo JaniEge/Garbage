@@ -41,6 +41,7 @@ import android.util.Log
 import coil.request.ImageRequest
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,7 +61,11 @@ fun RecyclingScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { /* nothing here */ }) {
+            FloatingActionButton(
+                onClick = { /* nothing here */ },
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary
+            ) {
                 Icon(Icons.Default.Add, contentDescription = null)
             }
         }

@@ -67,7 +67,11 @@ fun GarbageListScreen(
                 )
             },
             floatingActionButton = {
-                FloatingActionButton(onClick = viewModel::onAddClicked) {
+                FloatingActionButton(
+                    onClick = viewModel::onAddClicked,
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary
+                ) {
                     Icon(Icons.Default.Add, null)
                 }
             }
