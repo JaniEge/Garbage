@@ -89,7 +89,13 @@ class BinRepositoryImpl : BinRepository {
             title = "Electronics waste",
             description = "Small electronic devices, cables, chargers, and electrical equipment.",
             imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvZpi9Bx_A4pSxTIImmLJs9umH0HICC7YfaQ&s"
-        )
+        ),
+        Bin(
+            id = "bulky waste",
+            title = "Bulky waste",
+            description = "Large household items such as furniture, mattresses, carpets, and big items that don't fit in regular bins.",
+            imageUrl = "https://cdn.josafety.dk/media/catalog/product/cache/618acdf0e9257170c15469528d31905a/A/F/AF3002_3dbc23a4_1_7.webp"
+    )
     )
 
     override fun getBins(): List<Bin> = bins
