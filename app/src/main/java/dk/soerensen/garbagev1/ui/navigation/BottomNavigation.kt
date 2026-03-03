@@ -48,7 +48,7 @@ fun BottomNavigationBar(navController: NavController) {
                 }
             },
             icon = { Icon(Icons.Default.Delete, contentDescription = null) },
-            label = { Text("Garbage") }
+            label = { Text("Sorting") }
         )
 
         NavigationBarItem(

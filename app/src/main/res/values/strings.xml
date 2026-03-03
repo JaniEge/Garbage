@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">GarbageV1</string>
+    <string name="app_name">Garbage Sorting</string>
     <string name="list_label">Garbage Sorting</string>
     <string name="list_button_label">Show sorting List</string>
     <string name="deleted_message">Deleted: %1$s</string>
     <string name="undo">Undo</string>
-    <string name="undo_success">Sletning fortrudt: %1$s</string>
+    <string name="undo_success">Deletion cancelled: %1$s</string>
     <string name="item_added_success">Item "%1$s" successfully added</string>
 </resources>

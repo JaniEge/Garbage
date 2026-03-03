@@ -7,9 +7,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dk.soerensen.garbagev1.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,7 +30,7 @@ fun GarbageSortingScreen(
         contentWindowInsets = WindowInsets(0),   // 🔥 VIGTIG FIX
         topBar = {
             TopAppBar(
-                title = { Text("GarbageSorting") },
+                title = { Text(stringResource(R.string.list_label)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 )

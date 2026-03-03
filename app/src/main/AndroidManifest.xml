@@ -19,7 +19,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="garbageV1"
+            android:label="Garbage sorting"
             android:theme="@style/Theme.GarbageV1">
 
             <intent-filter>
