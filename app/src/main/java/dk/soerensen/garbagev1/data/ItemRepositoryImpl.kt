@@ -19,8 +19,6 @@ import javax.inject.Singleton
 @Singleton
 class ItemRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
-    private val itemDao: ItemDao
-
 ) : ItemRepository {
 
     private val _items = MutableStateFlow(loadFromRaw())
