@@ -45,6 +45,8 @@ android {
 }
 
 dependencies {
+
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -54,9 +56,14 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
 
+    //added implementation for room library
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
+
     // ✅ Coil for loading images in Compose (v2.2 requirement)
     implementation("io.coil-kt:coil-compose:2.7.0")
-    implementation("io.coil-kt:coil-compose:2.5.0")
+   // implementation("io.coil-kt:coil-compose:2.5.0")
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
