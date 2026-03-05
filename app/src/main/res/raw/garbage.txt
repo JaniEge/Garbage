@@ -1,4 +1,5 @@
 newspaper, paper
+banana, food
 magazine, paper
 milk carton, plastic
 shoe box, cardboard

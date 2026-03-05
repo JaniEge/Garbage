@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
@@ -67,10 +68,15 @@ private const val ANIM_MS = 500
 
 @Composable
 fun MainNavigation(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    intent: android.content.Intent? = null
 ) {
     val navController = rememberNavController()
     val singleTop: NavOptions = navOptions { launchSingleTop = true }
+
+    LaunchedEffect(intent) {
+        intent?.let { navController.handleDeepLink(it) }
+    }
 
     Scaffold(
         modifier = modifier,

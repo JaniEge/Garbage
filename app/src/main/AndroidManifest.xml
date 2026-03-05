@@ -4,6 +4,7 @@
     <!-- Required for loading images from the internet (Coil) -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+
     <application
         android:name=".GarbageSortingApplication"
         android:allowBackup="true"
@@ -18,7 +19,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="garbageV1"
+            android:label="Garbage sorting"
             android:theme="@style/Theme.GarbageV1">
 
             <intent-filter>
@@ -26,7 +27,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Deep link (beholdes) -->
+            <!-- Deep link -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -34,7 +35,8 @@
 
                 <data
                     android:scheme="garbage"
-                    android:host="items" />
+                    android:host="items"
+                    android:pathPrefix="/" />
             </intent-filter>
 
         </activity>

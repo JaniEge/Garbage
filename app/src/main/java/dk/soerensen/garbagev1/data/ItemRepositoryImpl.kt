@@ -82,7 +82,9 @@ class ItemRepositoryImpl @Inject constructor(
     override fun getItem(id: String): Flow<GarbageItem?> {
         val q = id.trim()
         return items.map { list ->
-            if (q.isBlank()) null else list.firstOrNull { it.id == q }
+            if (q.isBlank()) null
+            else list.firstOrNull { it.id == q }
+                ?: list.firstOrNull { it.name.equals(q, ignoreCase = true) } // fallback to name
         }
     }
 

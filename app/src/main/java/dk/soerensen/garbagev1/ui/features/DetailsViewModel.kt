@@ -35,8 +35,10 @@ class DetailsViewModel @Inject constructor(
     val navigationEvents = _navigationEvents.asSharedFlow()
 
     init {
+        android.util.Log.d("DetailsVM", "Looking for itemId: '$itemId'")  // ADD THIS
         viewModelScope.launch {
             itemRepository.getItem(id = itemId).collect { item ->
+                android.util.Log.d("DetailsVM", "Got item: $item")  // ADD THIS
                 _uiState.update { it.copy(selectedItem = item) }
             }
         }

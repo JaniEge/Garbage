@@ -29,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,6 +37,7 @@ import coil.compose.AsyncImage
 import dk.soerensen.garbagev1.domain.GarbageItem
 import dk.soerensen.garbagev1.ui.components.AppTopBar
 import dk.soerensen.garbagev1.ui.components.NavigationType
+import dk.soerensen.garbagev1.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,13 +61,17 @@ fun GarbageListScreen(
             containerColor = MaterialTheme.colorScheme.background,
             topBar = {
                 AppTopBar(
-                    title = "GarbageV1",
+                    title = stringResource(R.string.list_label),
                     navigationType = NavigationType.BACK,
                     onNavigationClick = viewModel::onUpClicked
                 )
             },
             floatingActionButton = {
-                FloatingActionButton(onClick = viewModel::onAddClicked) {
+                FloatingActionButton(
+                    onClick = viewModel::onAddClicked,
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary
+                ) {
                     Icon(Icons.Default.Add, null)
                 }
             }
