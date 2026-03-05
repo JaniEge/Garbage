@@ -1,17 +1,15 @@
-package dk.soerensen.garbagev1.ui.features
+package dk.soerensen.garbagev1.ui.features.garbage
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -27,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,13 +36,13 @@ import dk.soerensen.garbagev1.ui.theme.GarbageV1Theme
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AddWhere(val what: String)
+object AddWhat
 
 @Composable
-fun AddWhereScreen(
-    onNavigate: (AddWhereViewModel.NavigationEvent) -> Unit,
+fun AddWhatScreen(
+    onNavigate: (AddWhatViewModel.NavigationEvent) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: AddWhereViewModel = hiltViewModel(),
+    viewModel: AddWhatViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -51,7 +50,7 @@ fun AddWhereScreen(
         viewModel.navigationEvents.collect { onNavigate(it) }
     }
 
-    AddWhereScreen(
+    AddWhatScreen(
         modifier = modifier,
         uiState = uiState,
         uiEvents = viewModel.uiEvents
@@ -60,20 +59,20 @@ fun AddWhereScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AddWhereScreen(
-    uiState: AddWhereViewModel.UiState,
-    uiEvents: AddWhereViewModel.UiEvents,
+private fun AddWhatScreen(
+    uiState: AddWhatViewModel.UiState,
+    uiEvents: AddWhatViewModel.UiEvents,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Choose bin") },
+                title = { Text(text = "Add item") },
                 navigationIcon = {
                     IconButton(onClick = uiEvents::onUpClick) {
                         Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Close"
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
                         )
                     }
                 },
@@ -93,30 +92,21 @@ private fun AddWhereScreen(
             val focusManager = LocalFocusManager.current
 
             TextField(
-                value = uiState.where,
-                onValueChange = uiEvents::onWhereChange,
-                label = { Text(text = "Bin") },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                value = uiState.what,
+                onValueChange = uiEvents::onWhatChange,
+                label = { Text(text = "What are you throwing out?") },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Next) }),
                 isError = uiState.isError,
                 supportingText = {
-                    if (uiState.isError) Text(text = "Bin cannot be empty")
+                    if (uiState.isError) Text(text = "Field cannot be empty")
                 }
             )
 
             Spacer(Modifier.height(16.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                Button(onClick = uiEvents::onCancelClick) {
-                    Text(text = "Cancel")
-                }
-
-                Button(onClick = uiEvents::onDoneClick) {
-                    Text(text = "Done")
-                }
+            Button(onClick = uiEvents::onNextClick) {
+                Text(text = "Next")
             }
         }
     }
@@ -124,15 +114,14 @@ private fun AddWhereScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun AddWhereScreenPreview() {
+fun AddWhatScreenPreview() {
     GarbageV1Theme {
-        AddWhereScreen(
-            uiState = AddWhereViewModel.UiState(where = "Bio"),
-            uiEvents = object : AddWhereViewModel.UiEvents {
-                override fun onWhereChange(where: String) {}
-                override fun onDoneClick() {}
+        AddWhatScreen(
+            uiState = AddWhatViewModel.UiState(what = "Banana peel"),
+            uiEvents = object : AddWhatViewModel.UiEvents {
+                override fun onWhatChange(what: String) {}
+                override fun onNextClick() {}
                 override fun onUpClick() {}
-                override fun onCancelClick() {}
             }
         )
     }

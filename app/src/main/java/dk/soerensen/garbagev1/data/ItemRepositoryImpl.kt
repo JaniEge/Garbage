@@ -3,6 +3,7 @@ package dk.soerensen.garbagev1.data
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dk.soerensen.garbagev1.R
+import dk.soerensen.garbagev1.data.database.ItemDao
 import dk.soerensen.garbagev1.domain.GarbageItem
 import dk.soerensen.garbagev1.domain.ItemRepository
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,8 @@ import javax.inject.Singleton
 @Singleton
 class ItemRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
+    private val itemDao: ItemDao
+
 ) : ItemRepository {
 
     private val _items = MutableStateFlow(loadFromRaw())
