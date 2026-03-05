@@ -1,4 +1,4 @@
-package dk.soerensen.garbagev1.ui.features
+package dk.soerensen.garbagev1.ui.features.garbage
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

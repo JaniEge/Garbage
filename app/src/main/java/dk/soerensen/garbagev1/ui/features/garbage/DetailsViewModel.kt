@@ -1,5 +1,6 @@
-package dk.soerensen.garbagev1.ui.features
+package dk.soerensen.garbagev1.ui.features.garbage
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -35,10 +36,10 @@ class DetailsViewModel @Inject constructor(
     val navigationEvents = _navigationEvents.asSharedFlow()
 
     init {
-        android.util.Log.d("DetailsVM", "Looking for itemId: '$itemId'")  // ADD THIS
+        Log.d("DetailsVM", "Looking for itemId: '$itemId'")  // ADD THIS
         viewModelScope.launch {
             itemRepository.getItem(id = itemId).collect { item ->
-                android.util.Log.d("DetailsVM", "Got item: $item")  // ADD THIS
+                Log.d("DetailsVM", "Got item: $item")  // ADD THIS
                 _uiState.update { it.copy(selectedItem = item) }
             }
         }
