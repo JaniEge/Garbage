@@ -1,12 +1,13 @@
 package dk.soerensen.garbagev1.ui.features.recycling
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.soerensen.garbagev1.domain.Bin
 import dk.soerensen.garbagev1.domain.BinRepository
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
@@ -14,12 +15,10 @@ class RecyclingViewModel @Inject constructor(
     private val binRepository: BinRepository
 ) : ViewModel() {
 
-
-
-    private val _bins = MutableStateFlow<List<Bin>>(emptyList())
-    val bins: StateFlow<List<Bin>> = _bins.asStateFlow()
-
-    init {
-        _bins.value = binRepository.getBins()
-    }
+    val bins: StateFlow<List<Bin>> = binRepository.getBins()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 }

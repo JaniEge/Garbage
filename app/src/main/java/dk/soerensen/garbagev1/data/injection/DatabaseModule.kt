@@ -7,12 +7,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import dk.soerensen.garbagev1.data.database.BinDao
+import dk.soerensen.garbagev1.data.database.GarbageDatabase
 import dk.soerensen.garbagev1.data.database.ItemDao
-import dk.soerensen.garbagev1.data.database.ShopDao
-import dk.soerensen.garbagev1.data.database.ShoppingDatabase
 import javax.inject.Provider
 import javax.inject.Singleton
-import kotlin.jvm.java
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -20,29 +19,29 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideShoppingDatabase(
+    fun provideGarbageDatabase(
         @ApplicationContext context: Context,
         itemDaoProvider: Provider<ItemDao>,
-        shopDaoProvider: Provider<ShopDao>
-    ): ShoppingDatabase {
+        binDaoProvider: Provider<BinDao>
+    ): GarbageDatabase {
         return Room.databaseBuilder(
-            context = context,
-            klass = ShoppingDatabase::class.java,
-            name = "shopping_database"
+            context,
+            GarbageDatabase::class.java,
+            "garbage_database"
         )
-            .addCallback(callback = ShoppingDatabase.Callback(itemDaoProvider, shopDaoProvider))
+            .addCallback(GarbageDatabase.Callback(itemDaoProvider, binDaoProvider))
             .build()
     }
 
     @Provides
     @Singleton
-    fun provideItemDao(database: ShoppingDatabase): ItemDao {
+    fun provideItemDao(database: GarbageDatabase): ItemDao {
         return database.itemDao()
     }
 
     @Provides
     @Singleton
-    fun provideShopDao(database: ShoppingDatabase): ShopDao {
-        return database.shopDao()
+    fun provideBinDao(database: GarbageDatabase): BinDao {
+        return database.binDao()
     }
 }

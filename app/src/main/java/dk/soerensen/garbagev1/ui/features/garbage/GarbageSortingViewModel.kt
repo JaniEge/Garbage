@@ -43,19 +43,11 @@ class GarbageSortingViewModel @Inject constructor(
 
     fun onWhereClicked() {
         val q = uiState.value.query.trim()
-        val bin = repository.findBin(q)
-
-        val resultText =
-            if (bin != null) "$q should be placed in: $bin"
-            else "Item not found"
-
-        // ryd inputfeltet efter søgning
-        savedStateHandle["query"] = ""
-        _uiState.update {
-            it.copy(
-                query = "",
-                result = resultText
-            )
+        viewModelScope.launch {
+            val bin = repository.findBin(q)
+            val resultText = if (bin != null) "$q should be placed in: $bin" else "Item not found"
+            savedStateHandle["query"] = ""
+            _uiState.update { it.copy(query = "", result = resultText) }
         }
     }
 

@@ -9,24 +9,17 @@ import dk.soerensen.garbagev1.domain.ItemRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
 
 @HiltViewModel
 class GarbageListViewModel @Inject constructor(
     private val itemRepository: ItemRepository,
     private val binRepository: BinRepository,
 ) : ViewModel() {
-
-
-    private val binImageUrls: Map<String, String> =
-        binRepository.getBins().associate { bin ->
-            bin.id.trim().lowercase() to bin.imageUrl
-        }
 
     data class UiState(
         val items: List<GarbageItem> = emptyList(),
@@ -43,14 +36,17 @@ class GarbageListViewModel @Inject constructor(
     val navigationEvents = _navigationEvents.receiveAsFlow()
 
     val uiState: StateFlow<UiState> =
-        itemRepository.items
-            .combine(flowOf(binImageUrls)) { items, urls ->
-                UiState(items = items, binImageUrls = urls)
+        itemRepository.getItems()
+            .combine(binRepository.getBins()) { items, bins ->
+                val binImageUrls = bins.associate { bin ->
+                    bin.id.trim().lowercase() to bin.imageUrl
+                }
+                UiState(items = items, binImageUrls = binImageUrls)
             }
             .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5000),
-                UiState(binImageUrls = binImageUrls)
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = UiState()
             )
 
     fun onEditClicked(item: GarbageItem) {

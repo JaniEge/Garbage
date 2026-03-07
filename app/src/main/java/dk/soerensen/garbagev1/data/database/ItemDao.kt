@@ -9,10 +9,14 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ItemDao {
-    @Query(value = "SELECT * FROM items ORDER BY `where`, what")
-    fun getShoppingList(): Flow<List<ItemEntity>>
 
-    @Query(value = "SELECT * FROM items WHERE id = :id")
+    @Query("SELECT * FROM items ORDER BY bin, name")
+    fun getItems(): Flow<List<ItemEntity>>
+
+    @Query("SELECT * FROM items WHERE name = :name COLLATE NOCASE LIMIT 1")
+    suspend fun findByName(name: String): ItemEntity?
+
+    @Query("SELECT * FROM items WHERE id = :id")
     fun getItem(id: String): Flow<ItemEntity?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -21,6 +25,6 @@ interface ItemDao {
     @Update
     suspend fun update(item: ItemEntity)
 
-    @Query(value = "DELETE FROM items WHERE id = :id")
+    @Query("DELETE FROM items WHERE id = :id")
     suspend fun delete(id: String)
 }

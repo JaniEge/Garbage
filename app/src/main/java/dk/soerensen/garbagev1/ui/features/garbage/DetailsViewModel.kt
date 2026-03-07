@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
-import kotlin.let
 
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
@@ -36,10 +35,10 @@ class DetailsViewModel @Inject constructor(
     val navigationEvents = _navigationEvents.asSharedFlow()
 
     init {
-        Log.d("DetailsVM", "Looking for itemId: '$itemId'")  // ADD THIS
+        Log.d("DetailsVM", "Looking for itemId: '$itemId'")
         viewModelScope.launch {
             itemRepository.getItem(id = itemId).collect { item ->
-                Log.d("DetailsVM", "Got item: $item")  // ADD THIS
+                Log.d("DetailsVM", "Got item: $item")
                 _uiState.update { it.copy(selectedItem = item) }
             }
         }
@@ -65,13 +64,14 @@ class DetailsViewModel @Inject constructor(
         }
 
         override fun onDeleteClick() {
-            // Show confirm dialog instead of snackbar undo
             _uiState.update { it.copy(showDeleteDialog = true) }
         }
 
         override fun onConfirmDeleteClick() {
             _uiState.value.selectedItem?.let { item ->
-                itemRepository.remove(item)
+                viewModelScope.launch {
+                    itemRepository.remove(item)
+                }
             }
             _uiState.update { it.copy(showDeleteDialog = false) }
             onUpClick()
@@ -99,10 +99,8 @@ class DetailsViewModel @Inject constructor(
         fun onBinChange(bin: String)
         fun onSaveClick()
         fun onDeleteClick()
-
         fun onConfirmDeleteClick()
         fun onDismissDeleteClick()
-
         fun onUpClick()
     }
 

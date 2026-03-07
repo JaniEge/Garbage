@@ -27,7 +27,7 @@ fun GarbageSortingScreen(
     }
 
     Scaffold(
-        contentWindowInsets = WindowInsets(0),   // 🔥 VIGTIG FIX
+        contentWindowInsets = WindowInsets(0),
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.list_label)) },
@@ -72,8 +72,8 @@ fun GarbageSortingScreen(
                     Button(
                         onClick = viewModel::onWhereClicked,
                         modifier = Modifier
-                            .fillMaxWidth(0.6f)   // 60% af bredden
-                            .height(40.dp)        // lavere højde
+                            .fillMaxWidth(0.6f)
+                            .height(40.dp)
                     ) {
                         Text("Where")
                     }

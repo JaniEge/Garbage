@@ -13,13 +13,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.text.lowercase
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 @Singleton
-class UserPreferencesRepositoryImpl @Inject constructor(@param:ApplicationContext private val context: Context) :
-    UserPreferencesRepository {
+class UserPreferencesRepositoryImpl @Inject constructor(
+    @param:ApplicationContext private val context: Context
+) : UserPreferencesRepository {
 
     private object PreferencesKeys {
         val THEME = stringPreferencesKey(name = "theme")
@@ -36,9 +36,11 @@ class UserPreferencesRepositoryImpl @Inject constructor(@param:ApplicationContex
 
     override suspend fun setTheme(theme: Theme) {
         context.dataStore.edit { preferences ->
-            /*preferences[PreferencesKeys.THEME] = when (theme) {
-                // TODO: Map preferences keys to values
-            }*/
+            preferences[PreferencesKeys.THEME] = when (theme) {
+                Theme.LIGHT -> Theme.LIGHT.name.lowercase()
+                Theme.DARK -> Theme.DARK.name.lowercase()
+                Theme.SYSTEM -> Theme.SYSTEM.name.lowercase()
+            }
         }
     }
 }

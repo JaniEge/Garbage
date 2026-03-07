@@ -46,19 +46,9 @@ class AddWhereViewModel @Inject constructor(
             val name = what.trim()
 
             if (name.isNotBlank() && bin.isNotBlank()) {
-                itemRepository.add(
-                    index = 0,
-                    item = GarbageItem(name = name, bin = bin)
-                )
-
-                // ✅ Success besked
-                snackBarHandler.postMessage(
-                    msgRes = R.string.item_added_success,
-                    name
-                )
-
                 viewModelScope.launch {
-                    // Luk dialog + tilbage til listen (vi popper 2 gange i navigation)
+                    itemRepository.add(item = GarbageItem(name = name, bin = bin))  // ingen index
+                    snackBarHandler.postMessage(msgRes = R.string.item_added_success, name)
                     _navigationEvents.emit(NavigationEvent.CloseAndBackToList)
                 }
             } else {
