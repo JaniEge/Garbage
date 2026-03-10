@@ -10,21 +10,35 @@ import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
 import dk.soerensen.garbagev1.ui.navigation.MainNavigation
 import dk.soerensen.garbagev1.ui.theme.GarbageV1Theme
+import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dk.soerensen.garbagev1.domain.Theme
+import dk.soerensen.garbagev1.ui.features.settings.SettingsViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val settingsViewModel: SettingsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            GarbageV1Theme {
+            val uiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
+
+            GarbageV1Theme(darkTheme = when (uiState.theme) {
+                Theme.DARK -> true
+                Theme.LIGHT -> false
+                Theme.SYSTEM -> isSystemInDarkTheme()
+            }) {
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
                 ) { paddingValues ->
                     MainNavigation(
                         modifier = Modifier.padding(paddingValues),
-                        intent = intent  // ADD THIS
+                        intent = intent
                     )
                 }
             }

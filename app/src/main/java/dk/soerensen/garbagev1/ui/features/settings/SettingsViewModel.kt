@@ -28,7 +28,9 @@ class SettingsViewModel @Inject constructor(
 
     val uiEvents: UiEvents = object : UiEvents {
         override fun onSetTheme(theme: Theme) {
-            // TODO: Save the theme to the DataStore
+            viewModelScope.launch {
+                userPreferencesRepository.setTheme(theme)
+            }
         }
     }
 

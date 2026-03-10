@@ -56,7 +56,6 @@ dependencies {
 
     // ✅ Coil for loading images in Compose (v2.2 requirement)
     implementation("io.coil-kt:coil-compose:2.7.0")
-    implementation("io.coil-kt:coil-compose:2.5.0")
 
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)

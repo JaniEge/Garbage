@@ -11,7 +11,6 @@ data class ItemEntity(
     val name: String,
     val bin: String,
     val description: String,
-    // TODO: Add deadline to item
 )
 
 fun ItemEntity.toGarbageItemDto(): GarbageItemDto =
