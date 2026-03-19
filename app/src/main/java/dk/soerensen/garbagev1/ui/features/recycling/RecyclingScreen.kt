@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -49,12 +50,12 @@ fun RecyclingScreen(
                 Column(
                     modifier = modifier
                         .fillMaxSize()
-                        .padding(paddingValues),
-                    verticalArrangement = Arrangement.Center
+                        .padding(paddingValues)
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.padding(16.dp)
-                    )
+                    CircularProgressIndicator()
                 }
             }
 
@@ -64,7 +65,8 @@ fun RecyclingScreen(
                         .fillMaxSize()
                         .padding(paddingValues)
                         .padding(16.dp),
-                    verticalArrangement = Arrangement.Center
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = uiState.error ?: "Unknown error",
@@ -116,15 +118,15 @@ private fun RecyclingStationCard(
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Text(
-                text = station.name,
+                text = station.name.ifBlank { "Unknown station" },
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
-                text = "Address: ${station.address}",
+                text = "Address: ${station.address.ifBlank { "Unknown address" }}",
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
-                text = "Category: ${station.category}",
+                text = "Category: ${station.category.ifBlank { "Unknown category" }}",
                 style = MaterialTheme.typography.bodyMedium
             )
         }
