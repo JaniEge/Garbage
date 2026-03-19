@@ -27,7 +27,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(json: Json): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://api.dataforsyningen.dk/")
+            .baseUrl("https://wfs-kbhkort.kk.dk/")
             .addConverterFactory(
                 json.asConverterFactory("application/json".toMediaType())
             )
