@@ -5,9 +5,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import dk.verzier.shoppingv7.data.remote.FoodishApiService
+import dk.soerensen.garbagev1.data.remote.RecyclingStationApiService
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonBuilder
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 import javax.inject.Singleton
@@ -18,22 +17,28 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    fun provideJson(): Json {
+        return Json {
+            ignoreUnknownKeys = true
+        }
+    }
+
+    @Provides
+    @Singleton
     fun provideRetrofit(json: Json): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(/* baseUrl = */ "https://foodish-api.com/")
-            .addConverterFactory(/* factory = */ json.asConverterFactory(contentType = "application/json".toMediaType()))
+            .baseUrl("https://api.dataforsyningen.dk/")
+            .addConverterFactory(
+                json.asConverterFactory("application/json".toMediaType())
+            )
             .build()
     }
 
     @Provides
     @Singleton
-    fun provideFoodishApiService(retrofit: Retrofit): FoodishApiService {
-        return retrofit.create(FoodishApiService::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideJson(): Json {
-        return Json { JsonBuilder.ignoreUnknownKeys = true }
+    fun provideRecyclingStationApiService(
+        retrofit: Retrofit
+    ): RecyclingStationApiService {
+        return retrofit.create(RecyclingStationApiService::class.java)
     }
 }

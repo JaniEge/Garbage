@@ -20,6 +20,7 @@ import dk.soerensen.garbagev1.ui.features.garbage.AddWhatScreen
 import dk.soerensen.garbagev1.ui.features.garbage.AddWhatViewModel
 import dk.soerensen.garbagev1.ui.features.garbage.AddWhereScreen
 import dk.soerensen.garbagev1.ui.features.garbage.AddWhereViewModel
+import dk.soerensen.garbagev1.ui.features.garbage.AffaldKBHScreen
 import dk.soerensen.garbagev1.ui.features.garbage.DetailsScreen
 import dk.soerensen.garbagev1.ui.features.garbage.DetailsViewModel
 import dk.soerensen.garbagev1.ui.features.garbage.GarbageListScreen
@@ -30,27 +31,26 @@ import dk.soerensen.garbagev1.ui.features.recycling.RecyclingScreen
 import dk.soerensen.garbagev1.ui.features.settings.SettingsScreen
 import kotlinx.serialization.Serializable
 
-// ---------------------------
-// Kotlin Serialization routes
-// ---------------------------
-
 @Serializable
 object GarbageGraph
 
 @Serializable
-object GarbageSortingRoute          // Screen 1: Search (start)
+object GarbageSortingRoute
 
 @Serializable
-object GarbageListRoute             // Screen 2: List
+object GarbageListRoute
 
 @Serializable
-data class GarbageDetailsRoute(val itemId: String) // Screen 3: Details/Edit
+object AffaldKBHRoute
 
 @Serializable
-object AddWhatRoute                 // Screen 4: Add flow step 1
+data class GarbageDetailsRoute(val itemId: String)
 
 @Serializable
-data class AddWhereDialogRoute(val what: String)   // Screen 5: Add flow step 2 (dialog)
+object AddWhatRoute
+
+@Serializable
+data class AddWhereDialogRoute(val what: String)
 
 @Serializable
 object RecyclingGraph
@@ -90,9 +90,6 @@ fun MainNavigation(
             modifier = Modifier.padding(innerPadding)
         ) {
 
-            // -------------------------
-            // 1) Garbage (nested graph)
-            // -------------------------
             navigation<GarbageGraph>(startDestination = GarbageSortingRoute) {
 
                 composable<GarbageSortingRoute> {
@@ -105,9 +102,45 @@ fun MainNavigation(
                                         navOptions = singleTop
                                     )
                                 }
+
+                                is GarbageSortingViewModel.NavigationEvent.NavigateToAffaldKbh -> {
+                                    navController.navigate(
+                                        route = AffaldKBHRoute,
+                                        navOptions = singleTop
+                                    )
+                                }
                             }
                         }
                     )
+                }
+
+                composable<AffaldKBHRoute>(
+                    enterTransition = {
+                        slideIntoContainer(
+                            towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                            animationSpec = tween(ANIM_MS)
+                        )
+                    },
+                    exitTransition = {
+                        slideOutOfContainer(
+                            towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(ANIM_MS)
+                        )
+                    },
+                    popEnterTransition = {
+                        slideIntoContainer(
+                            towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(ANIM_MS)
+                        )
+                    },
+                    popExitTransition = {
+                        slideOutOfContainer(
+                            towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(ANIM_MS)
+                        )
+                    }
+                ) {
+                    AffaldKBHScreen()
                 }
 
                 composable<GarbageListRoute>(
@@ -202,23 +235,14 @@ fun MainNavigation(
                 }
             }
 
-            // -------------------------
-            // 2) Recycling (top-level)
-            // -------------------------
             navigation<RecyclingGraph>(startDestination = RecyclingRoute) {
                 composable<RecyclingRoute> { RecyclingScreen() }
             }
 
-            // -------------------------
-            // 3) Settings (top-level)
-            // -------------------------
             navigation<SettingsGraph>(startDestination = SettingsRoute) {
                 composable<SettingsRoute> { SettingsScreen() }
             }
 
-            // ---------------------------------------
-            // 4) Add flow (global / outside the tabs)
-            // ---------------------------------------
             composable<AddWhatRoute>(
                 enterTransition = {
                     slideIntoContainer(

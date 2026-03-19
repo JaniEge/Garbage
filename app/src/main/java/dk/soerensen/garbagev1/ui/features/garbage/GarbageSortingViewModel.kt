@@ -26,6 +26,7 @@ class GarbageSortingViewModel @Inject constructor(
 
     sealed interface NavigationEvent {
         data object NavigateToList : NavigationEvent
+        data object NavigateToAffaldKbh : NavigationEvent
     }
 
     private val _navigationEvents = Channel<NavigationEvent>(Channel.BUFFERED)
@@ -45,7 +46,11 @@ class GarbageSortingViewModel @Inject constructor(
         val q = uiState.value.query.trim()
         viewModelScope.launch {
             val bin = repository.findBin(q)
-            val resultText = if (bin != null) "$q should be placed in: $bin" else "Item not found"
+            val resultText = if (bin != null) {
+                "$q should be placed in: $bin"
+            } else {
+                "Item not found"
+            }
             savedStateHandle["query"] = ""
             _uiState.update { it.copy(query = "", result = resultText) }
         }
@@ -54,6 +59,12 @@ class GarbageSortingViewModel @Inject constructor(
     fun onListClicked() {
         viewModelScope.launch {
             _navigationEvents.send(NavigationEvent.NavigateToList)
+        }
+    }
+
+    fun onAffaldKbhClicked() {
+        viewModelScope.launch {
+            _navigationEvents.send(NavigationEvent.NavigateToAffaldKbh)
         }
     }
 }

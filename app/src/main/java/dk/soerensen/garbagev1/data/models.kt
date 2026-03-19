@@ -2,6 +2,7 @@ package dk.soerensen.garbagev1.data
 
 import dk.soerensen.garbagev1.data.database.ItemEntity
 import dk.soerensen.garbagev1.domain.GarbageItem
+import kotlinx.serialization.Serializable
 import java.util.UUID
 
 data class GarbageItemDto(
@@ -26,3 +27,15 @@ fun GarbageItemDto.toEntity(): ItemEntity =
         bin = bin,
         description = description
     )
+
+@Serializable
+data class RecyclingFeature(
+    val id: String? = null,
+    val navn: String? = null,
+    val kategori: String? = null,
+    val adresse: String? = null,
+    val status: String? = null,
+    val fraktioner: List<String> = emptyList(),
+    val latitude: Double? = null,
+    val longitude: Double? = null
+)

@@ -58,11 +58,11 @@ fun GarbageSortingScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 if (state.result.isNotBlank()) {
                     Text(state.result)
-                    Spacer(Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                 }
 
                 Column(
@@ -85,6 +85,15 @@ fun GarbageSortingScreen(
                             .height(40.dp)
                     ) {
                         Text("List")
+                    }
+
+                    Button(
+                        onClick = viewModel::onAffaldKbhClicked,
+                        modifier = Modifier
+                            .fillMaxWidth(0.6f)
+                            .height(40.dp)
+                    ) {
+                        Text("Affald KBH")
                     }
                 }
             }

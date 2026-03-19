@@ -8,7 +8,6 @@ data class GarbageItem(
     val name: String,
     val bin: String,
     val description: String = "",
-    // TODO: Add deadline to item
 )
 
 data class Bin(
@@ -17,15 +16,31 @@ data class Bin(
     val description: String,
     val imageUrl: String
 )
+
+data class RecyclingStation(
+    val id: String,
+    val name: String,
+    val category: String,
+    val address: String,
+    val status: String,
+    val bins: List<String>,
+    val latitude: Double,
+    val longitude: Double,
+)
+
 enum class Theme {
     SYSTEM,
     LIGHT,
     DARK
 }
 
-fun GarbageItem.toDto(): GarbageItemDto = GarbageItemDto(id = this.id, name = this.name, bin = this.bin, description = this.description)
-//fun Shop.toDto(): ShopDto = ShopDto(name = this.name, imageUrl = this.imageUrl, brandColor = this.brandColor.value.toString())
+fun GarbageItem.toDto(): GarbageItemDto =
+    GarbageItemDto(
+        id = this.id,
+        name = this.name,
+        bin = this.bin,
+        description = this.description
+    )
 
 fun GarbageItem.fullDescription(): String =
     "${name.trim()} → ${bin.trim()}"
-
