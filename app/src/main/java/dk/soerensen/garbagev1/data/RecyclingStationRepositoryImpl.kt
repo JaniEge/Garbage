@@ -14,16 +14,28 @@ class RecyclingStationRepositoryImpl @Inject constructor(
 ) : RecyclingStationRepository {
 
     override fun getRecyclingStations(): Flow<List<RecyclingStation>> = flow {
-        val stations = apiService.getRecyclingStations().map { station ->
+        val response = apiService.getRecyclingStations()
+
+        val stations = response.features.map { feature ->
+            val properties = feature.properties
+            val firstCoordinatePair = feature.geometry.coordinates.firstOrNull()
+
+            val longitude = firstCoordinatePair?.getOrNull(0) ?: 0.0
+            val latitude = firstCoordinatePair?.getOrNull(1) ?: 0.0
+
             RecyclingStation(
-                id = station.id ?: "",
-                name = station.navn ?: "",
-                category = station.kategori ?: "",
-                address = station.adresse ?: "",
-                status = station.status ?: "",
-                bins = station.fraktioner,
-                latitude = station.latitude ?: 0.0,
-                longitude = station.longitude ?: 0.0
+                id = properties.id.toString(),
+                name = properties.navn ?: "",
+                category = properties.kategori ?: "",
+                address = properties.adresse ?: "",
+                status = properties.status ?: "",
+                bins = properties.fraktioner
+                    ?.split(",")
+                    ?.map { it.trim() }
+                    ?.filter { it.isNotBlank() }
+                    ?: emptyList(),
+                latitude = latitude,
+                longitude = longitude
             )
         }
 
