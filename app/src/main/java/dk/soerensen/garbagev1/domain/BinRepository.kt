@@ -5,4 +5,5 @@ import kotlinx.coroutines.flow.Flow
 interface BinRepository {
     fun getBins(): Flow<List<Bin>>
     fun getBin(id: String): Flow<Bin?>
+    suspend fun updateBin(bin: Bin)
 }

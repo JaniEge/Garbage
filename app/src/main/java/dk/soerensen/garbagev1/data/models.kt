@@ -24,8 +24,8 @@ fun GarbageItemDto.toItem(): GarbageItem =
 fun GarbageItemDto.toEntity(): ItemEntity =
     ItemEntity(
         id = id,
-        name = name,
-        bin = bin,
+        title = name,
+        binId = bin,
         description = description
     )
 

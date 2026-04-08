@@ -5,9 +5,9 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "bins")
 data class BinEntity(
-    @PrimaryKey
-    val id: String,
-    val title: String,
-    val description: String,
-    val imageUrl: String
+    @PrimaryKey val id: String = "",
+    val title: String = "",
+    val description: String = "",
+    val imageUrl: String = "",
+    val lastPickupTime: Long = 0L
 )
