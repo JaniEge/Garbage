@@ -13,7 +13,7 @@ import javax.inject.Singleton
 
 @Singleton
 class BinRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore // ✅ Skiftet fra BinDao
+    private val firestore: FirebaseFirestore
 ) : BinRepository {
 
     private val binsCollection = firestore.collection("bins")
@@ -23,10 +23,10 @@ class BinRepositoryImpl @Inject constructor(
             .orderBy("title")
             .addSnapshotListener { snapshot, _ ->
                 if (snapshot != null) {
-                    // Vi mapper manuelt for at sikre, at ID'et (f.eks. "bio") kommer med
                     val bins = snapshot.documents.mapNotNull { doc ->
+                        // Ved at bruge doc.id sikrer vi, at ID'et fra Firebase (bio, glass, etc.)
+                        // bliver brugt som nøgle til dine billeder!
                         val entity = doc.toObject(BinEntity::class.java)
-                        // doc.id er navnet på dokumentet i din Firebase (bio, glass, osv.)
                         entity?.copy(id = doc.id)?.toBin()
                     }
                     trySend(bins)
@@ -35,13 +35,12 @@ class BinRepositoryImpl @Inject constructor(
         awaitClose { subscription.remove() }
     }
 
-
-
-
     override fun getBin(id: String): Flow<Bin?> = callbackFlow {
         val subscription = binsCollection.document(id).addSnapshotListener { snapshot, _ ->
             if (snapshot != null && snapshot.exists()) {
-                val bin = snapshot.toObject(BinEntity::class.java)?.toBin()
+                // Her skal vi også huske at snuppe id'et fra dokumentet
+                val entity = snapshot.toObject(BinEntity::class.java)
+                val bin = entity?.copy(id = snapshot.id)?.toBin()
                 trySend(bin)
             } else {
                 trySend(null)
@@ -50,19 +49,21 @@ class BinRepositoryImpl @Inject constructor(
         awaitClose { subscription.remove() }
     }
 
-    // Tilføj denne hvis dit interface kræver det (V3.2 krav om opdatering af tid)
     override suspend fun updateBin(bin: Bin) {
+        // Her gemmer vi hele objektet (inklusiv den nye count) tilbage til Firebase
         binsCollection.document(bin.id).set(bin.toEntity()).await()
     }
 
     // --- Hjælpefunktioner til konvertering ---
+    // Her skal 'count' tilføjes i begge retninger!
 
     private fun BinEntity.toBin() = Bin(
         id = id,
         title = title,
         description = description,
         imageUrl = imageUrl,
-        lastPickupTime = lastPickupTime // ✅ Sørg for at din Domain Bin model har dette felt
+        lastPickupTime = lastPickupTime,
+        count = count // 👈 TILFØJ DENNE
     )
 
     private fun Bin.toEntity() = BinEntity(
@@ -70,6 +71,7 @@ class BinRepositoryImpl @Inject constructor(
         title = title,
         description = description,
         imageUrl = imageUrl,
-        lastPickupTime = lastPickupTime
+        lastPickupTime = lastPickupTime,
+        count = count // 👈 TILFØJ DENNE
     )
 }

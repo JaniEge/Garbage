@@ -37,7 +37,14 @@ class RecyclingViewModel @Inject constructor(
     fun updateBin(bin: Bin) {
         viewModelScope.launch {
             try {
-                binRepository.updateBin(bin)
+                // Vi opretter en kopi af bin, hvor vi tæller +1 op
+                // og opdaterer tidsstemplet
+                val updatedBin = bin.copy(
+                    lastPickupTime = System.currentTimeMillis(),
+                    // Vi antager du kalder feltet 'count' i din model (se punkt 2)
+                    count = bin.count + 1
+                )
+                binRepository.updateBin(updatedBin)
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = "Kunne ikke opdatere: ${e.message}") }
             }

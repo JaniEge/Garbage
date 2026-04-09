@@ -36,8 +36,12 @@ fun BinDetailsSheet(
         // ✅ "Track Recycling" knappen fra opgavebeskrivelsen
         Button(
             onClick = {
-                // Opdaterer bin med det nuværende tidsstempel
-                onTrackRecycling(bin.copy(lastPickupTime = System.currentTimeMillis()))
+                onTrackRecycling(
+                    bin.copy(
+                        lastPickupTime = System.currentTimeMillis(),
+                        count = bin.count + 1
+                    )
+                )
             },
             modifier = Modifier.fillMaxWidth()
         ) {
