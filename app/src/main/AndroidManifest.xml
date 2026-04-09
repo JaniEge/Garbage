@@ -21,7 +21,11 @@
         android:roundIcon="@mipmap/icon_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GarbageV1">
-        <receiver android:name=".data.geofence.GeofenceReceiver"/>
+
+        <receiver
+            android:name=".data.geofence.GeofenceReceiver"
+            android:exported="false"/>
+
 
         <activity
             android:name=".MainActivity"
