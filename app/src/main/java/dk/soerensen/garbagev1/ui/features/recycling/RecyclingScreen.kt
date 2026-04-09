@@ -74,6 +74,14 @@ fun RecyclingScreen(
                     })
                 }
             }
+            Button(
+                onClick = { viewModel.enableGeofencing() },
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                Text("Enable Geofencing")
+            }
 
             // --- 📍 GENBRUGSSTATIONER SEKTION (Bund) ---
             Text(

@@ -18,14 +18,15 @@ data class Bin(
     val lastPickupTime: Long = 0L // 👈 TILFØJ DENNE LINJE
 )
 data class RecyclingStation(
-    val id: String,
-    val name: String,
-    val category: String,
-    val address: String,
-    val status: String,
-    val bins: List<String>,
-    val latitude: Double,
-    val longitude: Double,
+
+val id: String = "",
+val name: String = "",
+val category: String = "",
+val address: String = "",
+val status: String = "",
+val bins: List<String> = emptyList(),
+val latitude: Double = 0.0,
+val longitude: Double = 0.0
 )
 
 enum class Theme {

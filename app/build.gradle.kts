@@ -60,6 +60,8 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.7.0")
 
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.play.services.location)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
@@ -90,4 +92,8 @@ dependencies {
     // Tilføj de Firebase produkter du skal bruge:
     implementation("com.google.firebase:firebase-firestore-ktx") // Databasen
     implementation("com.google.firebase:firebase-analytics-ktx")  // Valgfri, men god til statistik
+
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("androidx.hilt:hilt-work:1.0.0")
+    ksp("androidx.hilt:hilt-compiler:1.0.0")
 }
