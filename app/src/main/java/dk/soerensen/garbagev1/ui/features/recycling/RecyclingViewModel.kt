@@ -10,11 +10,13 @@ import dk.soerensen.garbagev1.domain.RecyclingStationRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import dk.soerensen.garbagev1.data.geofence.GeofenceManager
 
 @HiltViewModel
 class RecyclingViewModel @Inject constructor(
     private val recyclingStationRepository: RecyclingStationRepository,
-    private val binRepository: BinRepository
+    private val binRepository: BinRepository,
+    private val geofenceManager: GeofenceManager
 ) : ViewModel() {
 
     // ✅ Henter dine Bins som en Flow direkte fra Firebase
@@ -62,5 +64,8 @@ class RecyclingViewModel @Inject constructor(
                     _uiState.update { it.copy(stations = stations, isLoading = false) }
                 }
         }
+    }
+    fun enableGeofencing() {
+        geofenceManager.registerGeofences(uiState.value.stations)
     }
 }

@@ -19,14 +19,15 @@ data class Bin(
     val count: Int = 0 // 👈 Tilføj denne linje (fjern teksten her når du har skrevet det)
 )
 data class RecyclingStation(
-    val id: String,
-    val name: String,
-    val category: String,
-    val address: String,
-    val status: String,
-    val bins: List<String>,
-    val latitude: Double,
-    val longitude: Double,
+
+val id: String = "",
+val name: String = "",
+val category: String = "",
+val address: String = "",
+val status: String = "",
+val bins: List<String> = emptyList(),
+val latitude: Double = 0.0,
+val longitude: Double = 0.0
 )
 
 enum class Theme {
