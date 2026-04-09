@@ -96,4 +96,5 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("androidx.hilt:hilt-work:1.0.0")
     ksp("androidx.hilt:hilt-compiler:1.0.0")
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 }
