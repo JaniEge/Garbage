@@ -42,7 +42,7 @@ class RecyclingViewModel @Inject constructor(
                 val updatedBin = bin.copy(
                     lastPickupTime = System.currentTimeMillis(),
                     // Vi antager du kalder feltet 'count' i din model (se punkt 2)
-                    count = bin.count + 1
+                    count = bin.count
                 )
                 binRepository.updateBin(updatedBin)
             } catch (e: Exception) {
