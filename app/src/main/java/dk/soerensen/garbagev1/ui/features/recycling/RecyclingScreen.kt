@@ -137,25 +137,52 @@ fun BinCarouselCard(bin: Bin, onClick: () -> Unit) {
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
+
             AsyncImage(
                 model = bin.imageUrl,
                 contentDescription = bin.title,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
-            // Titel overlay på billedet
+
+            // Counter badge øverst til højre
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp),
+                shape = MaterialTheme.shapes.medium,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
+            ) {
+                Text(
+                    text = "${bin.count}",
+                    modifier = Modifier.padding(
+                        horizontal = 12.dp,
+                        vertical = 6.dp
+                    ),
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+
+            // Titel nederst
             Surface(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth(),
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
             ) {
-                Text(
-                    text = bin.title,
-                    modifier = Modifier.padding(8.dp),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Column(
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text(
+                        text = bin.title,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+
+                    Text(
+                        text = "Genbrugt ${bin.count} gange",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
             }
         }
     }
