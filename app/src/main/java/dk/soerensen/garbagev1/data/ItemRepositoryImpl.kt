@@ -1,7 +1,6 @@
 package dk.soerensen.garbagev1.data
 
 import com.google.firebase.firestore.FirebaseFirestore
-import dk.soerensen.garbagev1.data.database.ItemEntity
 import dk.soerensen.garbagev1.domain.GarbageItem
 import dk.soerensen.garbagev1.domain.ItemRepository
 import kotlinx.coroutines.channels.awaitClose
@@ -13,42 +12,60 @@ import javax.inject.Singleton
 
 @Singleton
 class ItemRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore // ✅ Skiftet fra ItemDao
+    private val firestore: FirebaseFirestore
 ) : ItemRepository {
 
     private val itemsCollection = firestore.collection("items")
 
     override fun getItems(): Flow<List<GarbageItem>> = callbackFlow {
-        val subscription = itemsCollection.addSnapshotListener { snapshot, _ ->
-            if (snapshot != null) {
-                val items = snapshot.toObjects(ItemEntity::class.java).map { it.toItem() }
-                trySend(items)
+        val subscription = itemsCollection.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
             }
+
+            val items = snapshot?.documents?.mapNotNull { doc ->
+                doc.toObject(GarbageItem::class.java)?.copy(id = doc.id)
+            } ?: emptyList()
+
+            trySend(items).isSuccess
         }
+
         awaitClose { subscription.remove() }
     }
 
     override fun getItem(id: String): Flow<GarbageItem?> = callbackFlow {
-        val subscription = itemsCollection.document(id).addSnapshotListener { snapshot, _ ->
-            if (snapshot != null && snapshot.exists()) {
-                val item = snapshot.toObject(ItemEntity::class.java)?.toItem()
-                trySend(item)
-            } else {
-                trySend(null)
+        val subscription = itemsCollection.document(id)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+
+                val item = if (snapshot != null && snapshot.exists()) {
+                    snapshot.toObject(GarbageItem::class.java)?.copy(id = snapshot.id)
+                } else {
+                    null
+                }
+
+                trySend(item).isSuccess
             }
-        }
+
         awaitClose { subscription.remove() }
     }
 
     override suspend fun add(item: GarbageItem) {
-        val formattedItem = item.copy(name = item.name.toTitleCase(), bin = item.bin.toTitleCase())
-        // Vi bruger dokument-ID som item.id
-        itemsCollection.document(formattedItem.id).set(formattedItem.toEntity()).await()
+        val formattedItem = item.copy(
+            name = item.name.toTitleCase()
+        )
+        itemsCollection.document(formattedItem.id).set(formattedItem).await()
     }
 
     override suspend fun updateItem(item: GarbageItem) {
-        val formattedItem = item.copy(name = item.name.toTitleCase(), bin = item.bin.toTitleCase())
-        itemsCollection.document(formattedItem.id).set(formattedItem.toEntity()).await()
+        val formattedItem = item.copy(
+            name = item.name.toTitleCase()
+        )
+        itemsCollection.document(formattedItem.id).set(formattedItem).await()
     }
 
     override suspend fun remove(item: GarbageItem) {
@@ -56,33 +73,22 @@ class ItemRepositoryImpl @Inject constructor(
     }
 
     override suspend fun findBin(name: String): String? {
-        val q = name.trim().lowercase()
-        if (q.isBlank()) return null
+        val formattedName = name.trim().toTitleCase()
 
-        // Simpel søgning i Firestore (kræver nøjagtigt match eller manuel filtrering)
-        val query = itemsCollection.whereEqualTo("name", q.toTitleCase()).get().await()
-        return query.documents.firstOrNull()?.getString("bin")
+        val querySnapshot = itemsCollection
+            .whereEqualTo("name", formattedName)
+            .get()
+            .await()
+
+        return querySnapshot.documents.firstOrNull()?.getString("bin")
     }
 
-    // --- Hjælpefunktioner til konvertering ---
-
-    private fun ItemEntity.toItem() = GarbageItem(
-        id = id,
-        name = title,
-        bin = binId,
-        description = description
-    )
-
-    private fun GarbageItem.toEntity() = ItemEntity(
-        id = id,
-        title = name,
-        binId = bin,
-        description = description
-    )
-
     private fun String.toTitleCase(): String {
-        return this.trim().split(" ").joinToString(separator = " ") { word ->
-            word.lowercase().replaceFirstChar { it.uppercase() }
-        }
+        return trim()
+            .split(Regex("\\s+"))
+            .filter { it.isNotBlank() }
+            .joinToString(" ") { word ->
+                word.lowercase().replaceFirstChar { it.uppercase() }
+            }
     }
 }

@@ -1,6 +1,5 @@
 package dk.soerensen.garbagev1.data
 
-import dk.soerensen.garbagev1.data.database.ItemEntity
 import dk.soerensen.garbagev1.domain.GarbageItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -8,8 +7,8 @@ import java.util.UUID
 
 data class GarbageItemDto(
     val id: String = UUID.randomUUID().toString(),
-    val name: String,
-    val bin: String,
+    val name: String = "",
+    val bin: String = "",
     val description: String = ""
 )
 
@@ -18,14 +17,6 @@ fun GarbageItemDto.toItem(): GarbageItem =
         id = id,
         name = name,
         bin = bin,
-        description = description
-    )
-
-fun GarbageItemDto.toEntity(): ItemEntity =
-    ItemEntity(
-        id = id,
-        title = name,
-        binId = bin,
         description = description
     )
 
