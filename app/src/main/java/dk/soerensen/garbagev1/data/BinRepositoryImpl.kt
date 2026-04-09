@@ -19,17 +19,24 @@ class BinRepositoryImpl @Inject constructor(
     private val binsCollection = firestore.collection("bins")
 
     override fun getBins(): Flow<List<Bin>> = callbackFlow {
-        // Vi sorterer efter titel, så de altid står pænt (f.eks. alfabetisk)
         val subscription = binsCollection
             .orderBy("title")
             .addSnapshotListener { snapshot, _ ->
                 if (snapshot != null) {
-                    val bins = snapshot.toObjects(BinEntity::class.java).map { it.toBin() }
+                    // Vi mapper manuelt for at sikre, at ID'et (f.eks. "bio") kommer med
+                    val bins = snapshot.documents.mapNotNull { doc ->
+                        val entity = doc.toObject(BinEntity::class.java)
+                        // doc.id er navnet på dokumentet i din Firebase (bio, glass, osv.)
+                        entity?.copy(id = doc.id)?.toBin()
+                    }
                     trySend(bins)
                 }
             }
         awaitClose { subscription.remove() }
     }
+
+
+
 
     override fun getBin(id: String): Flow<Bin?> = callbackFlow {
         val subscription = binsCollection.document(id).addSnapshotListener { snapshot, _ ->

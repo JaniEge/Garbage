@@ -33,8 +33,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         // Kør én gang for at fylde databasen
-        seedBinsToFirebase()
-        seedItemsToFirebase()
+        //seedBinsToFirebase()
+        //seedItemsToFirebase()
 
         setContent {
             val uiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
