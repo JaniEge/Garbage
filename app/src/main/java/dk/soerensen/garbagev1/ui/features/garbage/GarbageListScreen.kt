@@ -1,43 +1,30 @@
 package dk.soerensen.garbagev1.ui.features.garbage
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.Surface
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import dk.soerensen.garbagev1.R
 import dk.soerensen.garbagev1.domain.GarbageItem
 import dk.soerensen.garbagev1.ui.components.AppTopBar
 import dk.soerensen.garbagev1.ui.components.NavigationType
-import dk.soerensen.garbagev1.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,7 +38,6 @@ fun GarbageListScreen(
     LaunchedEffect(Unit) {
         viewModel.navigationEvents.collect { onNavigate(it) }
     }
-
 
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -72,62 +58,63 @@ fun GarbageListScreen(
                     containerColor = MaterialTheme.colorScheme.secondary,
                     contentColor = MaterialTheme.colorScheme.onSecondary
                 ) {
-                    Icon(Icons.Default.Add, null)
+                    Icon(Icons.Default.Add, contentDescription = "Tilføj")
                 }
             }
         ) { paddingValues ->
 
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp)
+                    .padding(paddingValues),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(
-                        items = uiState.items,
-                        key = { it.id }
-                    ) { item ->
-                        val binId = binIdForItemBin(item.bin)
-                        val imageUrl = uiState.binImageUrls[binId]
+                items(
+                    items = uiState.items,
+                    key = { it.id }
+                ) { item ->
+                    // Her mapper vi teksten til dine præcise Firebase ID'er
+                    val binId = binIdForItemBin(item.bin)
+                    val imageUrl = uiState.binImageUrls[binId]
 
-                        GarbageRow(
-                            item = item,
-                            imageUrl = imageUrl,
-                            onEdit = { viewModel.onEditClicked(item) }
-                        )
-                    }
+                    GarbageRow(
+                        item = item,
+                        imageUrl = imageUrl,
+                        onEdit = { viewModel.onEditClicked(item) }
+                    )
                 }
             }
         }
     }
 }
 
+/**
+ * Matcher teksten fra dine items med dokument-navnene i Firebase.
+ * Baseret på dit screenshot: 'bio', 'food_carton', 'cardboard', etc.
+ */
 private fun binIdForItemBin(binText: String): String {
     val s = binText.trim().lowercase()
     return when {
-        // ✅ Food
-        s.contains("food") || s.contains("mad") || s.contains("bio") -> "food"
+        // Matche 'bio' dokumentet i Firebase
+        s.contains("food") || s.contains("mad") || s.contains("bio") -> "bio"
 
-        // ✅ Metal
-        s.contains("metal") -> "metal"
+        // Matche 'food_carton' dokumentet i Firebase
+        s.contains("carton") || s.contains("karton") -> "food_carton"
 
-        // ✅ Paper
-        s.contains("paper") || s.contains("papir") -> "paper"
-
-        // ✅ Glass
-        s.contains("glass") || s.contains("glas") -> "glass"
-
-        // ✅ Plastic
-        s.contains("plastic") || s.contains("plast") -> "plastic"
-
-        // behold dine special cases
+        // Matche 'cardboard' dokumentet i Firebase
         s.contains("cardboard") || s.contains("pap") -> "cardboard"
-        s.contains("carton") || s.contains("karton") || s.contains("cartons") -> "food_drink_cartons"
 
-        else -> s
+        // Standard matches
+        s.contains("metal") -> "metal"
+        s.contains("paper") || s.contains("papir") -> "paper"
+        s.contains("glass") || s.contains("glas") -> "glass"
+        s.contains("plastic") || s.contains("plast") -> "plastic"
+        s.contains("rest") -> "rest"
+        s.contains("farligt") -> "farligt"
+        s.contains("textile") || s.contains("tekstil") -> "textile"
+
+        else -> s.replace(" ", "_")
     }
 }
 
@@ -141,9 +128,9 @@ private fun GarbageRow(
         onClick = onEdit,
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        )
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        ),
+        shape = RoundedCornerShape(12.dp)
     ) {
         Row(
             modifier = Modifier
@@ -151,34 +138,54 @@ private fun GarbageRow(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                modifier = Modifier.weight(1f)
+            // Billed-sektion
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.surface),
+                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "${item.name} should be placed in: ${item.bin}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
                 if (!imageUrl.isNullOrBlank()) {
                     AsyncImage(
                         model = imageUrl,
-                        contentDescription = "${item.bin} label",
-                        modifier = Modifier.size(96.dp)
+                        contentDescription = item.bin,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Fit
                     )
                 } else {
+                    // Fallback hvis billedet mangler helt
                     Text(
-                        text = "(no image for: ${item.bin})",
-                        style = MaterialTheme.typography.bodySmall
+                        text = "?",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.outline
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Tekst-sektion
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = item.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "Skal i: ${item.bin}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
 
             IconButton(onClick = onEdit) {
-                Text("✏️")
+                Text("✏️", style = MaterialTheme.typography.titleLarge)
             }
         }
     }

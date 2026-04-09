@@ -14,9 +14,10 @@ data class Bin(
     val id: String,
     val title: String,
     val description: String,
-    val imageUrl: String
+    val imageUrl: String,
+    val lastPickupTime: Long = 0L,
+    val count: Int = 0 // 👈 Tilføj denne linje (fjern teksten her når du har skrevet det)
 )
-
 data class RecyclingStation(
     val id: String,
     val name: String,

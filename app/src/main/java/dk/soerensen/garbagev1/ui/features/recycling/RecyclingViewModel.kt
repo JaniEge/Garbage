@@ -3,21 +3,22 @@ package dk.soerensen.garbagev1.ui.features.recycling
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dk.soerensen.garbagev1.domain.Bin
+import dk.soerensen.garbagev1.domain.BinRepository
 import dk.soerensen.garbagev1.domain.RecyclingStation
 import dk.soerensen.garbagev1.domain.RecyclingStationRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class RecyclingViewModel @Inject constructor(
-    private val recyclingStationRepository: RecyclingStationRepository
+    private val recyclingStationRepository: RecyclingStationRepository,
+    private val binRepository: BinRepository
 ) : ViewModel() {
+
+    // ✅ Henter dine Bins som en Flow direkte fra Firebase
+    val bins: Flow<List<Bin>> = binRepository.getBins()
 
     data class UiState(
         val stations: List<RecyclingStation> = emptyList(),
@@ -32,33 +33,33 @@ class RecyclingViewModel @Inject constructor(
         loadRecyclingStations()
     }
 
+    // ✅ Opdaterer lastPickupTime i Firebase når der trykkes på knappen
+    fun updateBin(bin: Bin) {
+        viewModelScope.launch {
+            try {
+                // Vi opretter en kopi af bin, hvor vi tæller +1 op
+                // og opdaterer tidsstemplet
+                val updatedBin = bin.copy(
+                    lastPickupTime = System.currentTimeMillis(),
+                    // Vi antager du kalder feltet 'count' i din model (se punkt 2)
+                    count = bin.count + 1
+                )
+                binRepository.updateBin(updatedBin)
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = "Kunne ikke opdatere: ${e.message}") }
+            }
+        }
+    }
+
     fun loadRecyclingStations() {
         viewModelScope.launch {
-            _uiState.update {
-                it.copy(
-                    isLoading = true,
-                    error = null
-                )
-            }
-
-            recyclingStationRepository
-                .getRecyclingStations()
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            recyclingStationRepository.getRecyclingStations()
                 .catch { e ->
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            error = e.message ?: "Failed to load recycling stations"
-                        )
-                    }
+                    _uiState.update { it.copy(isLoading = false, error = e.message) }
                 }
                 .collect { stations ->
-                    _uiState.update {
-                        it.copy(
-                            stations = stations,
-                            isLoading = false,
-                            error = null
-                        )
-                    }
+                    _uiState.update { it.copy(stations = stations, isLoading = false) }
                 }
         }
     }

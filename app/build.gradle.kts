@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.serialization)
+    id("com.google.gms.google-services")
+
 }
 
 android {
@@ -81,4 +83,11 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.material.icons)
+
+    // Firebase BoM (Bill of Materials) - så du ikke skal styre versionsnumre manuelt
+    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
+
+    // Tilføj de Firebase produkter du skal bruge:
+    implementation("com.google.firebase:firebase-firestore-ktx") // Databasen
+    implementation("com.google.firebase:firebase-analytics-ktx")  // Valgfri, men god til statistik
 }
