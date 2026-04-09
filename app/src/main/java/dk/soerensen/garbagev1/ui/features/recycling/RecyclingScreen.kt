@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -27,13 +28,14 @@ fun RecyclingScreen(
     viewModel: RecyclingViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    // ✅ Henter dine Bins fra Firebase via ViewModel
     val bins by viewModel.bins.collectAsStateWithLifecycle(initialValue = emptyList())
 
-    // State til at styre dit Detail Sheet
     var selectedBin by remember { mutableStateOf<Bin?>(null) }
     var showSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
+
+    // 🔥 NEW: permission dialog state
+    var showPermissionDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -49,7 +51,8 @@ fun RecyclingScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // --- 🎡 KARRUSEL SEKTION (Top) ---
+
+            // --- 🎡 KARRUSEL ---
             if (bins.isNotEmpty()) {
                 val pagerState = rememberPagerState(pageCount = { bins.size })
 
@@ -74,8 +77,10 @@ fun RecyclingScreen(
                     })
                 }
             }
+
+            // 🔥 FIX: åbner dialog i stedet for direkte geofence
             Button(
-                onClick = { viewModel.enableGeofencing() },
+                onClick = { showPermissionDialog = true },
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()
@@ -83,7 +88,7 @@ fun RecyclingScreen(
                 Text("Enable Geofencing")
             }
 
-            // --- 📍 GENBRUGSSTATIONER SEKTION (Bund) ---
+            // --- 📍 STATIONER ---
             Text(
                 text = "Nærmeste stationer",
                 style = MaterialTheme.typography.titleLarge,
@@ -92,16 +97,26 @@ fun RecyclingScreen(
 
             when {
                 uiState.isLoading -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
                         CircularProgressIndicator()
                     }
                 }
+
                 uiState.error != null -> {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         Text(text = uiState.error ?: "Fejl")
-                        Button(onClick = viewModel::loadRecyclingStations) { Text("Prøv igen") }
+                        Button(onClick = viewModel::loadRecyclingStations) {
+                            Text("Prøv igen")
+                        }
                     }
                 }
+
                 else -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -116,7 +131,7 @@ fun RecyclingScreen(
             }
         }
 
-        // --- 📝 MODAL BOTTOM SHEET (Detaljer & Knap) ---
+        // --- 📝 Bottom Sheet ---
         if (showSheet && selectedBin != null) {
             ModalBottomSheet(
                 onDismissRequest = { showSheet = false },
@@ -125,12 +140,24 @@ fun RecyclingScreen(
                 BinDetailsSheet(
                     bin = selectedBin!!,
                     onTrackRecycling = { updatedBin ->
-                        // ✅ Kalder ViewModel funktionen som gemmer i Firebase
                         viewModel.updateBin(updatedBin)
                         showSheet = false
                     }
                 )
             }
+        }
+
+        // 🔥 NEW: Permission dialog
+        if (showPermissionDialog) {
+            RequestBackgroundLocationPermission(
+                onPermissionGranted = {
+                    viewModel.enableGeofencing()
+                    showPermissionDialog = false
+                },
+                onDismiss = {
+                    showPermissionDialog = false
+                }
+            )
         }
     }
 }
@@ -153,7 +180,6 @@ fun BinCarouselCard(bin: Bin, onClick: () -> Unit) {
                 contentScale = ContentScale.Crop
             )
 
-            // Counter badge øverst til højre
             Surface(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -163,33 +189,20 @@ fun BinCarouselCard(bin: Bin, onClick: () -> Unit) {
             ) {
                 Text(
                     text = "${bin.count}",
-                    modifier = Modifier.padding(
-                        horizontal = 12.dp,
-                        vertical = 6.dp
-                    ),
+                    modifier = Modifier.padding(12.dp),
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             }
 
-            // Titel nederst
             Surface(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth(),
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
             ) {
-                Column(
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    Text(
-                        text = bin.title,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-
-                    Text(
-                        text = "Genbrugt ${bin.count} gange",
-                        style = MaterialTheme.typography.bodySmall
-                    )
+                Column(modifier = Modifier.padding(8.dp)) {
+                    Text(text = bin.title)
+                    Text(text = "Genbrugt ${bin.count} gange")
                 }
             }
         }
@@ -205,8 +218,8 @@ private fun RecyclingStationCard(station: RecyclingStation) {
         )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = station.name, style = MaterialTheme.typography.titleMedium)
-            Text(text = "Adresse: ${station.address}", style = MaterialTheme.typography.bodyMedium)
+            Text(text = station.name)
+            Text(text = "Adresse: ${station.address}")
         }
     }
 }
