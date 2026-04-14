@@ -64,17 +64,17 @@ fun RecyclingScreen(
 
                 Text(
                     text = stringResource(R.string.select_bin),
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(16.dp)
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
 
                 HorizontalPager(
                     state = pagerState,
-                    contentPadding = PaddingValues(horizontal = 48.dp),
+                    contentPadding = PaddingValues(horizontal = 64.dp),
                     pageSpacing = 16.dp,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(220.dp)
+                        .height(140.dp)
                 ) { page ->
                     val bin = bins[page]
                     BinCarouselCard(bin = bin, onClick = {
@@ -136,7 +136,7 @@ fun RecyclingScreen(
             Text(
                 text = stringResource(R.string.nearest_stations),
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
 
             when {
@@ -211,7 +211,7 @@ fun BinCarouselCard(bin: Bin, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(130.dp)
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
@@ -233,7 +233,7 @@ fun BinCarouselCard(bin: Bin, onClick: () -> Unit) {
             ) {
                 Text(
                     text = "${bin.count}",
-                    modifier = Modifier.padding(12.dp),
+                    modifier = Modifier.padding(8.dp),
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             }
@@ -244,7 +244,7 @@ fun BinCarouselCard(bin: Bin, onClick: () -> Unit) {
                     .fillMaxWidth(),
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
             ) {
-                Column(modifier = Modifier.padding(8.dp)) {
+                Column(modifier = Modifier.padding(4.dp)) {
                     Text(text = bin.title)
                     Text(text = stringResource(R.string.recycled_count_format, bin.count))
                 }
