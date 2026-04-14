@@ -6,8 +6,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import dk.soerensen.garbagev1.R
 import dk.soerensen.garbagev1.domain.Bin
 
 @Composable
@@ -21,7 +23,7 @@ fun BinDetailsSheet(
 
         AsyncImage(
             model = bin.imageUrl,
-            contentDescription = "${bin.title} label",
+            contentDescription = stringResource(R.string.bin_image_content_description, bin.title),
             modifier = Modifier
                 .size(200.dp)
                 .align(Alignment.CenterHorizontally),
@@ -45,7 +47,7 @@ fun BinDetailsSheet(
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Track Recycling")
+            Text(stringResource(R.string.track_recycling))
         }
 
         Spacer(Modifier.height(16.dp))

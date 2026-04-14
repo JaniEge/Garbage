@@ -58,7 +58,7 @@ fun GarbageListScreen(
                     containerColor = MaterialTheme.colorScheme.secondary,
                     contentColor = MaterialTheme.colorScheme.onSecondary
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Tilføj")
+                    Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_content_description))
                 }
             }
         ) { paddingValues ->
@@ -156,7 +156,7 @@ private fun GarbageRow(
                 } else {
                     // Fallback hvis billedet mangler helt
                     Text(
-                        text = "?",
+                        text = stringResource(R.string.fallback_text),
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.outline
                     )
@@ -178,7 +178,7 @@ private fun GarbageRow(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "Skal i: ${item.bin}",
+                    text = stringResource(R.string.bin_label_format, item.bin),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

@@ -11,11 +11,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import dk.soerensen.garbagev1.R
 import dk.soerensen.garbagev1.domain.Bin
 import dk.soerensen.garbagev1.domain.RecyclingStation
 import dk.soerensen.garbagev1.ui.components.AppTopBar
@@ -41,7 +43,7 @@ fun RecyclingScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             AppTopBar(
-                title = "Recycling",
+                title = stringResource(R.string.recycling_title),
                 navigationType = NavigationType.NONE
             )
         }
@@ -57,7 +59,7 @@ fun RecyclingScreen(
                 val pagerState = rememberPagerState(pageCount = { bins.size })
 
                 Text(
-                    text = "Vælg beholder",
+                    text = stringResource(R.string.select_bin),
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -85,12 +87,12 @@ fun RecyclingScreen(
                     .padding(16.dp)
                     .fillMaxWidth()
             ) {
-                Text("Enable Geofencing")
+                Text(stringResource(R.string.enable_geofencing))
             }
 
             // --- 📍 STATIONER ---
             Text(
-                text = "Nærmeste stationer",
+                text = stringResource(R.string.nearest_stations),
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(16.dp)
             )
@@ -110,9 +112,9 @@ fun RecyclingScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(text = uiState.error ?: "Fejl")
+                        Text(text = uiState.error ?: stringResource(R.string.error_text))
                         Button(onClick = viewModel::loadRecyclingStations) {
-                            Text("Prøv igen")
+                            Text(stringResource(R.string.retry_button))
                         }
                     }
                 }
@@ -202,7 +204,7 @@ fun BinCarouselCard(bin: Bin, onClick: () -> Unit) {
             ) {
                 Column(modifier = Modifier.padding(8.dp)) {
                     Text(text = bin.title)
-                    Text(text = "Genbrugt ${bin.count} gange")
+                    Text(text = stringResource(R.string.recycled_count_format, bin.count))
                 }
             }
         }
@@ -219,7 +221,7 @@ private fun RecyclingStationCard(station: RecyclingStation) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = station.name)
-            Text(text = "Adresse: ${station.address}")
+            Text(text = stringResource(R.string.address_format, station.address))
         }
     }
 }

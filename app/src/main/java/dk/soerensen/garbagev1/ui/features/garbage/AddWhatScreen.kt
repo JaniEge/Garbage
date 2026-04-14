@@ -32,6 +32,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.res.stringResource
+import dk.soerensen.garbagev1.R
 import dk.soerensen.garbagev1.ui.theme.GarbageV1Theme
 import kotlinx.serialization.Serializable
 
@@ -67,12 +69,12 @@ private fun AddWhatScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Add item") },
+                title = { Text(text = stringResource(R.string.add_item_title)) },
                 navigationIcon = {
                     IconButton(onClick = uiEvents::onUpClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.back_content_description)
                         )
                     }
                 },
@@ -94,19 +96,19 @@ private fun AddWhatScreen(
             TextField(
                 value = uiState.what,
                 onValueChange = uiEvents::onWhatChange,
-                label = { Text(text = "What are you throwing out?") },
+                label = { Text(text = stringResource(R.string.what_label)) },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Next) }),
                 isError = uiState.isError,
                 supportingText = {
-                    if (uiState.isError) Text(text = "Field cannot be empty")
+                    if (uiState.isError) Text(text = stringResource(R.string.field_cannot_be_empty))
                 }
             )
 
             Spacer(Modifier.height(16.dp))
 
             Button(onClick = uiEvents::onNextClick) {
-                Text(text = "Next")
+                Text(text = stringResource(R.string.next_button))
             }
         }
     }
