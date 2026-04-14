@@ -1,8 +1,11 @@
 package dk.soerensen.garbagev1.ui.features.garbage
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -92,6 +95,26 @@ fun AddWhatScreen(
         }
     }
 
+    fun launchCamera() {
+        val imagesDir = File(context.cacheDir, "images").also { it.mkdirs() }
+        val photoFile = File(imagesDir, "photo_${System.currentTimeMillis()}.jpg")
+        val uri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.provider",
+            photoFile
+        )
+        cameraImageUri = uri
+        cameraLauncher.launch(uri)
+    }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            launchCamera()
+        }
+    }
+
     LaunchedEffect(Unit) {
         viewModel.navigationEvents.collect { onNavigate(it) }
     }
@@ -102,15 +125,15 @@ fun AddWhatScreen(
         imageUri = imageUri,
         uiEvents = viewModel.uiEvents,
         onCameraClick = {
-            val imagesDir = File(context.cacheDir, "images").also { it.mkdirs() }
-            val photoFile = File(imagesDir, "photo_${System.currentTimeMillis()}.jpg")
-            val uri = FileProvider.getUriForFile(
-                context,
-                "${context.packageName}.provider",
-                photoFile
-            )
-            cameraImageUri = uri
-            cameraLauncher.launch(uri)
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.CAMERA
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                launchCamera()
+            } else {
+                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            }
         },
         onGalleryClick = {
             galleryLauncher.launch("image/*")
