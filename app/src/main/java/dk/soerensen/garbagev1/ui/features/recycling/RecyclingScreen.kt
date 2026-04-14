@@ -262,8 +262,15 @@ private fun RecyclingStationCard(station: RecyclingStation) {
         )
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
-            Text(text = station.name)
+            Text(text = station.name, style = MaterialTheme.typography.titleSmall)
             Text(text = stringResource(R.string.address_format, station.address))
+            if (station.bins.isNotEmpty()) {
+                Text(
+                    text = station.bins.joinToString(", "),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }

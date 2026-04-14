@@ -50,4 +50,8 @@
     <string name="settings_tab">Settings</string>
     <string name="filter_by_bin_type">Filter by waste type</string>
     <string name="clear_filters">Clear filters</string>
+    <string name="camera_button">Camera</string>
+    <string name="gallery_button">Gallery</string>
+    <string name="selected_image_content_description">Selected image</string>
+    <string name="item_image_content_description">Item image</string>
 </resources>

@@ -146,12 +146,13 @@ private fun GarbageRow(
                     .background(MaterialTheme.colorScheme.surface),
                 contentAlignment = Alignment.Center
             ) {
-                if (!imageUrl.isNullOrBlank()) {
+                val displayImageUrl = if (item.imageUri.isNotBlank()) item.imageUri else imageUrl
+                if (!displayImageUrl.isNullOrBlank()) {
                     AsyncImage(
-                        model = imageUrl,
+                        model = displayImageUrl,
                         contentDescription = item.bin,
                         modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Fit
+                        contentScale = ContentScale.Crop
                     )
                 } else {
                     // Fallback hvis billedet mangler helt

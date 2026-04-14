@@ -50,4 +50,8 @@
     <string name="settings_tab">Indstillinger</string>
     <string name="filter_by_bin_type">Filtrer efter affaldstype</string>
     <string name="clear_filters">Ryd filtre</string>
+    <string name="camera_button">Kamera</string>
+    <string name="gallery_button">Galleri</string>
+    <string name="selected_image_content_description">Valgt billede</string>
+    <string name="item_image_content_description">Item billede</string>
 </resources>

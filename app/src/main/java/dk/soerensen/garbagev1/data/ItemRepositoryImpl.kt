@@ -70,14 +70,16 @@ class ItemRepositoryImpl @Inject constructor(
         id = id,
         name = title,
         bin = binId,
-        description = description
+        description = description,
+        imageUri = imageUri
     )
 
     private fun GarbageItem.toEntity() = ItemEntity(
         id = id,
         title = name,
         binId = bin,
-        description = description
+        description = description,
+        imageUri = imageUri
     )
 
     private fun String.toTitleCase(): String {
