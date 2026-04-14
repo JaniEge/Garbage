@@ -27,11 +27,18 @@ class AddWhatViewModel @Inject constructor() : ViewModel() {
             _uiState.update { it.copy(what = what, isError = false) }
         }
 
+        override fun onImageSelected(uri: String) {
+            _uiState.update { it.copy(imageUri = uri) }
+        }
+
         override fun onNextClick() {
             if (_uiState.value.what.isNotBlank()) {
                 viewModelScope.launch {
                     _navigationEvents.emit(
-                        NavigationEvent.NavigateToAddWhere(what = uiState.value.what.trim())
+                        NavigationEvent.NavigateToAddWhere(
+                            what = uiState.value.what.trim(),
+                            imageUri = uiState.value.imageUri
+                        )
                     )
                 }
             } else {
@@ -46,18 +53,20 @@ class AddWhatViewModel @Inject constructor() : ViewModel() {
 
     data class UiState(
         val what: String = "",
+        val imageUri: String = "",
         val isError: Boolean = false
     )
 
     @Immutable
     interface UiEvents {
         fun onWhatChange(what: String)
+        fun onImageSelected(uri: String)
         fun onNextClick()
         fun onUpClick()
     }
 
     sealed class NavigationEvent {
         data object NavigateUp : NavigationEvent()
-        data class NavigateToAddWhere(val what: String) : NavigationEvent()
+        data class NavigateToAddWhere(val what: String, val imageUri: String = "") : NavigationEvent()
     }
 }

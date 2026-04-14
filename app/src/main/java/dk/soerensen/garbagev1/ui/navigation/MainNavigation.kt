@@ -50,7 +50,7 @@ data class GarbageDetailsRoute(val itemId: String)
 object AddWhatRoute
 
 @Serializable
-data class AddWhereDialogRoute(val what: String)
+data class AddWhereDialogRoute(val what: String, val imageUri: String = "")
 
 @Serializable
 object RecyclingGraph
@@ -278,7 +278,10 @@ fun MainNavigation(
 
                             is AddWhatViewModel.NavigationEvent.NavigateToAddWhere -> {
                                 navController.navigate(
-                                    route = AddWhereDialogRoute(event.what),
+                                    route = AddWhereDialogRoute(
+                                        what = event.what,
+                                        imageUri = event.imageUri
+                                    ),
                                     navOptions = singleTop
                                 )
                             }

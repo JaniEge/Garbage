@@ -8,6 +8,7 @@ data class GarbageItem(
     val name: String,
     val bin: String,
     val description: String = "",
+    val imageUri: String = ""
 )
 
 data class Bin(
@@ -41,7 +42,8 @@ fun GarbageItem.toDto(): GarbageItemDto =
         id = this.id,
         name = this.name,
         bin = this.bin,
-        description = this.description
+        description = this.description,
+        imageUri = this.imageUri
     )
 
 fun GarbageItem.fullDescription(): String =

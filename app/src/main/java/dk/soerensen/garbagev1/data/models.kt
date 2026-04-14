@@ -9,7 +9,8 @@ data class GarbageItemDto(
     val id: String = UUID.randomUUID().toString(),
     val name: String,
     val bin: String,
-    val description: String = ""
+    val description: String = "",
+    val imageUri: String = ""
 )
 
 fun GarbageItemDto.toItem(): GarbageItem =
@@ -17,7 +18,8 @@ fun GarbageItemDto.toItem(): GarbageItem =
         id = id,
         name = name,
         bin = bin,
-        description = description
+        description = description,
+        imageUri = imageUri
     )
 
 

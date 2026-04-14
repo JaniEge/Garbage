@@ -28,6 +28,7 @@ class AddWhereViewModel @Inject constructor(
 
     private val args: AddWhereDialogRoute = savedStateHandle.toRoute()
     private val what: String = args.what
+    private val imageUri: String = args.imageUri
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
@@ -47,7 +48,7 @@ class AddWhereViewModel @Inject constructor(
 
             if (name.isNotBlank() && bin.isNotBlank()) {
                 viewModelScope.launch {
-                    itemRepository.add(item = GarbageItem(name = name, bin = bin))  // ingen index
+                    itemRepository.add(item = GarbageItem(name = name, bin = bin, imageUri = imageUri))
                     snackBarHandler.postMessage(msgRes = R.string.item_added_success, name)
                     _navigationEvents.emit(NavigationEvent.CloseAndBackToList)
                 }
