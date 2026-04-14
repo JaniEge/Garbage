@@ -56,6 +56,9 @@ class RecyclingViewModel @Inject constructor(
         }
     }
 
+    private fun normalizeBinType(binType: String): String =
+        binType.trim().lowercase().replaceFirstChar { it.uppercase() }
+
     fun loadRecyclingStations() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
@@ -66,6 +69,7 @@ class RecyclingViewModel @Inject constructor(
                 .collect { stations ->
                     val binTypes = stations
                         .flatMap { it.bins }
+                        .map { normalizeBinType(it) }
                         .distinct()
                         .sorted()
                     _uiState.update {
@@ -93,8 +97,9 @@ class RecyclingViewModel @Inject constructor(
             val filtered = if (newFilters.isEmpty()) {
                 state.stations
             } else {
+                val normalizedFilters = newFilters.map { it.trim().lowercase() }.toSet()
                 state.stations.filter { station ->
-                    station.bins.any { it in newFilters }
+                    station.bins.any { bin -> bin.trim().lowercase() in normalizedFilters }
                 }
             }
             state.copy(

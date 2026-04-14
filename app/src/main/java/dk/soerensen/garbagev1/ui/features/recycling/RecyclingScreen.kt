@@ -88,7 +88,7 @@ fun RecyclingScreen(
             Button(
                 onClick = { showPermissionDialog = true },
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
                     .fillMaxWidth()
             ) {
                 Text(stringResource(R.string.enable_geofencing))
@@ -98,8 +98,8 @@ fun RecyclingScreen(
             if (uiState.availableBinTypes.isNotEmpty()) {
                 Text(
                     text = stringResource(R.string.filter_by_bin_type),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                 )
 
                 LazyRow(
@@ -135,8 +135,8 @@ fun RecyclingScreen(
             // --- 📍 STATIONER ---
             Text(
                 text = stringResource(R.string.nearest_stations),
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
             )
 
             when {
@@ -165,7 +165,7 @@ fun RecyclingScreen(
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         items(items = uiState.filteredStations, key = { it.id }) { station ->
                             RecyclingStationCard(station = station)
@@ -261,7 +261,7 @@ private fun RecyclingStationCard(station: RecyclingStation) {
             containerColor = MaterialTheme.colorScheme.primaryContainer
         )
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(12.dp)) {
             Text(text = station.name)
             Text(text = stringResource(R.string.address_format, station.address))
         }
