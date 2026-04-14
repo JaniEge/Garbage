@@ -1,6 +1,5 @@
 package dk.soerensen.garbagev1.data
 
-import dk.soerensen.garbagev1.data.database.ItemEntity
 import dk.soerensen.garbagev1.domain.GarbageItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -21,13 +20,6 @@ fun GarbageItemDto.toItem(): GarbageItem =
         description = description
     )
 
-fun GarbageItemDto.toEntity(): ItemEntity =
-    ItemEntity(
-        id = id,
-        title = name,
-        binId = bin,
-        description = description
-    )
 
 @Serializable
 data class RecyclingStationsResponse(

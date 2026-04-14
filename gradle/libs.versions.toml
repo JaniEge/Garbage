@@ -10,7 +10,6 @@ activityCompose = "1.12.2"
 composeBom = "2024.12.01"
 kotlinx-serialization = "1.8.1"
 androidx-navigation = "2.9.3"
-room = "2.6.1"
 
 # Hilt + KSP
 androidx-hilt = "1.3.0"
@@ -45,10 +44,6 @@ androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navig
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 
-#room
-androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
-androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
-androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workRuntimeKtx" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 

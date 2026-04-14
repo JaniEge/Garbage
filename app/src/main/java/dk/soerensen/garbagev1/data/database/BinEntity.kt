@@ -1,11 +1,6 @@
 package dk.soerensen.garbagev1.data.database
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
-@Entity(tableName = "bins")
 data class BinEntity(
-    @PrimaryKey
     var id: String = "",         // Skift fra 'val' til 'var' for Firebase
     var title: String = "",
     var description: String = "",
