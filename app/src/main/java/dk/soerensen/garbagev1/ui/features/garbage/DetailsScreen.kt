@@ -25,9 +25,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dk.soerensen.garbagev1.R
 import dk.soerensen.garbagev1.domain.GarbageItem
 
 @Composable
@@ -60,7 +62,7 @@ fun DetailsScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Loading...")
+            Text(stringResource(R.string.loading))
         }
     }
 }
@@ -87,14 +89,14 @@ private fun DetailsContent(
             IconButton(onClick = uiEvents::onUpClick) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back"
+                    contentDescription = stringResource(R.string.back_content_description)
                 )
             }
 
-            Text(text = "Edit item")
+            Text(text = stringResource(R.string.edit_item_title))
 
             TextButton(onClick = uiEvents::onSaveClick) {
-                Text(text = "Save")
+                Text(text = stringResource(R.string.save_button))
             }
         }
 
@@ -103,7 +105,7 @@ private fun DetailsContent(
         TextField(
             value = item.name,
             onValueChange = uiEvents::onNameChange,
-            label = { Text(text = "Name") }
+            label = { Text(text = stringResource(R.string.name_label)) }
         )
 
         Spacer(Modifier.height(height = 16.dp))
@@ -111,7 +113,7 @@ private fun DetailsContent(
         TextField(
             value = item.bin,
             onValueChange = uiEvents::onBinChange,
-            label = { Text(text = "Bin") }
+            label = { Text(text = stringResource(R.string.bin_field_label)) }
         )
 
         Spacer(Modifier.height(height = 24.dp))
@@ -125,7 +127,7 @@ private fun DetailsContent(
 
                 Spacer(Modifier.width(width = 8.dp))
 
-                Text(text = "Delete")
+                Text(text = stringResource(R.string.delete_button))
             }
         }
     }
@@ -133,16 +135,16 @@ private fun DetailsContent(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = uiEvents::onDismissDeleteClick,
-            title = { Text(text = "Delete item") },
-            text = { Text(text = "Are you sure you want to delete this item?") },
+            title = { Text(text = stringResource(R.string.delete_item_dialog_title)) },
+            text = { Text(text = stringResource(R.string.delete_item_dialog_message)) },
             confirmButton = {
                 TextButton(onClick = uiEvents::onConfirmDeleteClick) {
-                    Text(text = "Delete")
+                    Text(text = stringResource(R.string.delete_button))
                 }
             },
             dismissButton = {
                 TextButton(onClick = uiEvents::onDismissDeleteClick) {
-                    Text(text = "Cancel")
+                    Text(text = stringResource(R.string.cancel_button))
                 }
             }
         )

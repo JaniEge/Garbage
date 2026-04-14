@@ -7,8 +7,10 @@ import android.os.Build
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import dk.soerensen.garbagev1.R
 
 @Composable
 fun RequestBackgroundLocationPermission(
@@ -20,9 +22,9 @@ fun RequestBackgroundLocationPermission(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Enable Location Access") },
+        title = { Text(stringResource(R.string.enable_location_title)) },
         text = {
-            Text("This app uses your location in the background to remind you to recycle when you are near a recycling station.")
+            Text(stringResource(R.string.enable_location_message))
         },
         confirmButton = {
             Button(onClick = {
@@ -60,12 +62,12 @@ fun RequestBackgroundLocationPermission(
                 }
 
             }) {
-                Text("Allow")
+                Text(stringResource(R.string.allow_button))
             }
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel_button))
             }
         }
     )

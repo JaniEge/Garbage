@@ -54,7 +54,7 @@ fun GarbageSortingScreen(
                 OutlinedTextField(
                     value = state.query,
                     onValueChange = viewModel::onQueryChanged,
-                    label = { Text("Garbage item") },
+                    label = { Text(stringResource(R.string.garbage_item_label)) },
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -75,7 +75,7 @@ fun GarbageSortingScreen(
                             .fillMaxWidth(0.6f)
                             .height(40.dp)
                     ) {
-                        Text("Where")
+                        Text(stringResource(R.string.where_button))
                     }
 
                     Button(
@@ -84,7 +84,7 @@ fun GarbageSortingScreen(
                             .fillMaxWidth(0.6f)
                             .height(40.dp)
                     ) {
-                        Text("List")
+                        Text(stringResource(R.string.list_button))
                     }
 
                     Button(
@@ -93,7 +93,7 @@ fun GarbageSortingScreen(
                             .fillMaxWidth(0.6f)
                             .height(40.dp)
                     ) {
-                        Text("Affald KBH")
+                        Text(stringResource(R.string.affald_kbh))
                     }
                 }
             }

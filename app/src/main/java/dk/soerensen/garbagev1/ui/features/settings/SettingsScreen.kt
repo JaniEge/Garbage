@@ -21,9 +21,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dk.soerensen.garbagev1.R
 import dk.soerensen.garbagev1.domain.Theme
 import dk.soerensen.garbagev1.ui.components.ThemedPreviews
 import dk.soerensen.garbagev1.ui.theme.GarbageV1Theme
@@ -59,7 +61,7 @@ private fun SettingsScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Theme",
+                text = stringResource(R.string.theme_label),
                 color = MaterialTheme.colorScheme.onBackground
             )
             ExposedDropdownMenuBox(

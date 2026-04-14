@@ -13,11 +13,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
+import dk.soerensen.garbagev1.R
 import kotlin.reflect.KClass
 
 private fun NavDestination?.isInRoute(route: KClass<*>): Boolean {
@@ -48,7 +50,7 @@ fun BottomNavigationBar(navController: NavController) {
                 }
             },
             icon = { Icon(Icons.Default.Delete, contentDescription = null) },
-            label = { Text("Sorting") }
+            label = { Text(stringResource(R.string.sorting_tab)) }
         )
 
         NavigationBarItem(
@@ -61,7 +63,7 @@ fun BottomNavigationBar(navController: NavController) {
                 }
             },
             icon = { Icon(Icons.Default.Refresh, contentDescription = null) },
-            label = { Text("Recycling") }
+            label = { Text(stringResource(R.string.recycling_tab)) }
         )
 
         NavigationBarItem(
@@ -74,7 +76,7 @@ fun BottomNavigationBar(navController: NavController) {
                 }
             },
             icon = { Icon(Icons.Default.Settings, contentDescription = null) },
-            label = { Text("Settings") }
+            label = { Text(stringResource(R.string.settings_tab)) }
         )
     }
 }

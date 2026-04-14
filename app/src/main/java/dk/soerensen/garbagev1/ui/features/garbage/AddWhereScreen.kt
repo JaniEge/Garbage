@@ -33,6 +33,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.res.stringResource
+import dk.soerensen.garbagev1.R
 import dk.soerensen.garbagev1.ui.theme.GarbageV1Theme
 import kotlinx.serialization.Serializable
 
@@ -68,12 +70,12 @@ private fun AddWhereScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Choose bin") },
+                title = { Text(text = stringResource(R.string.choose_bin_title)) },
                 navigationIcon = {
                     IconButton(onClick = uiEvents::onUpClick) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Close"
+                            contentDescription = stringResource(R.string.close_content_description)
                         )
                     }
                 },
@@ -95,12 +97,12 @@ private fun AddWhereScreen(
             TextField(
                 value = uiState.where,
                 onValueChange = uiEvents::onWhereChange,
-                label = { Text(text = "Bin") },
+                label = { Text(text = stringResource(R.string.bin_field_label)) },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                 isError = uiState.isError,
                 supportingText = {
-                    if (uiState.isError) Text(text = "Bin cannot be empty")
+                    if (uiState.isError) Text(text = stringResource(R.string.bin_cannot_be_empty))
                 }
             )
 
@@ -111,11 +113,11 @@ private fun AddWhereScreen(
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 Button(onClick = uiEvents::onCancelClick) {
-                    Text(text = "Cancel")
+                    Text(text = stringResource(R.string.cancel_button))
                 }
 
                 Button(onClick = uiEvents::onDoneClick) {
-                    Text(text = "Done")
+                    Text(text = stringResource(R.string.done_button))
                 }
             }
         }
