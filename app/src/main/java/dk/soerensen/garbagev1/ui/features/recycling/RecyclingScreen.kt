@@ -3,9 +3,13 @@ package dk.soerensen.garbagev1.ui.features.recycling
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -90,6 +94,44 @@ fun RecyclingScreen(
                 Text(stringResource(R.string.enable_geofencing))
             }
 
+            // --- 🔍 FILTER SEKTION ---
+            if (uiState.availableBinTypes.isNotEmpty()) {
+                Text(
+                    text = stringResource(R.string.filter_by_bin_type),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    if (uiState.selectedBinFilters.isNotEmpty()) {
+                        item {
+                            AssistChip(
+                                onClick = { viewModel.clearFilters() },
+                                label = { Text(stringResource(R.string.clear_filters)) },
+                                leadingIcon = {
+                                    Icon(Icons.Default.Clear, contentDescription = null, modifier = Modifier.size(18.dp))
+                                }
+                            )
+                        }
+                    }
+
+                    items(uiState.availableBinTypes) { binType ->
+                        FilterChip(
+                            selected = binType in uiState.selectedBinFilters,
+                            onClick = { viewModel.toggleBinFilter(binType) },
+                            label = { Text(binType) },
+                            leadingIcon = if (binType in uiState.selectedBinFilters) {
+                                { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
+                            } else null
+                        )
+                    }
+                }
+            }
+
             // --- 📍 STATIONER ---
             Text(
                 text = stringResource(R.string.nearest_stations),
@@ -125,7 +167,7 @@ fun RecyclingScreen(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        items(items = uiState.stations, key = { it.id }) { station ->
+                        items(items = uiState.filteredStations, key = { it.id }) { station ->
                             RecyclingStationCard(station = station)
                         }
                     }

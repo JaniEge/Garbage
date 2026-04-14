@@ -48,4 +48,6 @@
     <string name="sorting_tab">Sorting</string>
     <string name="recycling_tab">Recycling</string>
     <string name="settings_tab">Settings</string>
+    <string name="filter_by_bin_type">Filter by waste type</string>
+    <string name="clear_filters">Clear filters</string>
 </resources>

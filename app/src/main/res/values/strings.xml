@@ -48,4 +48,6 @@
     <string name="sorting_tab">Sortering</string>
     <string name="recycling_tab">Genbrug</string>
     <string name="settings_tab">Indstillinger</string>
+    <string name="filter_by_bin_type">Filtrer efter affaldstype</string>
+    <string name="clear_filters">Ryd filtre</string>
 </resources>

@@ -24,6 +24,9 @@ class RecyclingViewModel @Inject constructor(
 
     data class UiState(
         val stations: List<RecyclingStation> = emptyList(),
+        val filteredStations: List<RecyclingStation> = emptyList(),
+        val availableBinTypes: List<String> = emptyList(),
+        val selectedBinFilters: Set<String> = emptySet(),
         val isLoading: Boolean = false,
         val error: String? = null
     )
@@ -61,11 +64,52 @@ class RecyclingViewModel @Inject constructor(
                     _uiState.update { it.copy(isLoading = false, error = e.message) }
                 }
                 .collect { stations ->
-                    _uiState.update { it.copy(stations = stations, isLoading = false) }
+                    val binTypes = stations
+                        .flatMap { it.bins }
+                        .distinct()
+                        .sorted()
+                    _uiState.update {
+                        it.copy(
+                            stations = stations,
+                            filteredStations = stations,
+                            availableBinTypes = binTypes,
+                            isLoading = false
+                        )
+                    }
                 }
         }
     }
     fun enableGeofencing() {
         geofenceManager.registerGeofences(uiState.value.stations)
+    }
+
+    fun toggleBinFilter(binType: String) {
+        _uiState.update { state ->
+            val newFilters = if (binType in state.selectedBinFilters) {
+                state.selectedBinFilters - binType
+            } else {
+                state.selectedBinFilters + binType
+            }
+            val filtered = if (newFilters.isEmpty()) {
+                state.stations
+            } else {
+                state.stations.filter { station ->
+                    station.bins.any { it in newFilters }
+                }
+            }
+            state.copy(
+                selectedBinFilters = newFilters,
+                filteredStations = filtered
+            )
+        }
+    }
+
+    fun clearFilters() {
+        _uiState.update { state ->
+            state.copy(
+                selectedBinFilters = emptySet(),
+                filteredStations = state.stations
+            )
+        }
     }
 }
