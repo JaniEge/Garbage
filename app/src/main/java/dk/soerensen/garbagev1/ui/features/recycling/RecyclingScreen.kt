@@ -183,8 +183,8 @@ fun RecyclingScreen(
             ) {
                 BinDetailsSheet(
                     bin = selectedBin!!,
-                    onTrackRecycling = { updatedBin ->
-                        viewModel.updateBin(updatedBin)
+                    onTrackRecycling = { bin ->
+                        viewModel.trackRecycling(bin)
                         showSheet = false
                     }
                 )
@@ -264,6 +264,12 @@ private fun RecyclingStationCard(station: RecyclingStation) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(text = station.name, style = MaterialTheme.typography.titleSmall)
             Text(text = stringResource(R.string.address_format, station.address))
+            if (station.category.isNotBlank()) {
+                Text(
+                    text = stringResource(R.string.category_format, station.category),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
             if (station.bins.isNotEmpty()) {
                 Text(
                     text = station.bins.joinToString(", "),

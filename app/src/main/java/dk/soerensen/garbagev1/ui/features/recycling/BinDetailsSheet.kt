@@ -37,14 +37,7 @@ fun BinDetailsSheet(
 
         // ✅ "Track Recycling" knappen fra opgavebeskrivelsen
         Button(
-            onClick = {
-                onTrackRecycling(
-                    bin.copy(
-                        lastPickupTime = System.currentTimeMillis(),
-                        count = bin.count + 1
-                    )
-                )
-            },
+            onClick = { onTrackRecycling(bin) },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(stringResource(R.string.track_recycling))
