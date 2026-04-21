@@ -8,6 +8,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,17 +19,16 @@ class BinRepositoryImpl @Inject constructor(
 
     private val binsCollection = firestore.collection("bins")
 
+    private fun useDanish(): Boolean = Locale.getDefault().language == "da"
+
     override fun getBins(): Flow<List<Bin>> = callbackFlow {
         val subscription = binsCollection
-            .orderBy("title")
             .addSnapshotListener { snapshot, _ ->
                 if (snapshot != null) {
                     val bins = snapshot.documents.mapNotNull { doc ->
-                        // Ved at bruge doc.id sikrer vi, at ID'et fra Firebase (bio, glass, etc.)
-                        // bliver brugt som nøgle til dine billeder!
                         val entity = doc.toObject(BinEntity::class.java)
                         entity?.copy(id = doc.id)?.toBin()
-                    }
+                    }.sortedBy { it.title }
                     trySend(bins)
                 }
             }
@@ -38,7 +38,6 @@ class BinRepositoryImpl @Inject constructor(
     override fun getBin(id: String): Flow<Bin?> = callbackFlow {
         val subscription = binsCollection.document(id).addSnapshotListener { snapshot, _ ->
             if (snapshot != null && snapshot.exists()) {
-                // Her skal vi også huske at snuppe id'et fra dokumentet
                 val entity = snapshot.toObject(BinEntity::class.java)
                 val bin = entity?.copy(id = snapshot.id)?.toBin()
                 trySend(bin)
@@ -50,28 +49,38 @@ class BinRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateBin(bin: Bin) {
-        // Her gemmer vi hele objektet (inklusiv den nye count) tilbage til Firebase
-        binsCollection.document(bin.id).set(bin.toEntity()).await()
+        binsCollection.document(bin.id).update(
+            mapOf(
+                "lastPickupTime" to bin.lastPickupTime,
+                "count" to bin.count
+            )
+        ).await()
     }
 
     // --- Hjælpefunktioner til konvertering ---
-    // Her skal 'count' tilføjes i begge retninger!
 
-    private fun BinEntity.toBin() = Bin(
-        id = id,
-        title = title,
-        description = description,
-        imageUrl = imageUrl,
-        lastPickupTime = lastPickupTime,
-        count = count // 👈 TILFØJ DENNE
-    )
+    private fun resolveField(primary: String, legacy: String, fallback: String): String =
+        primary.ifBlank { legacy.ifBlank { fallback } }
 
-    private fun Bin.toEntity() = BinEntity(
-        id = id,
-        title = title,
-        description = description,
-        imageUrl = imageUrl,
-        lastPickupTime = lastPickupTime,
-        count = count // 👈 TILFØJ DENNE
-    )
+    private fun BinEntity.toBin(): Bin {
+        val danish = useDanish()
+        val resolvedTitle = if (danish) {
+            resolveField(titleDa, title, titleEn)
+        } else {
+            resolveField(titleEn, title, titleDa)
+        }
+        val resolvedDescription = if (danish) {
+            resolveField(descriptionDa, description, descriptionEn)
+        } else {
+            resolveField(descriptionEn, description, descriptionDa)
+        }
+        return Bin(
+            id = id,
+            title = resolvedTitle,
+            description = resolvedDescription,
+            imageUrl = imageUrl,
+            lastPickupTime = lastPickupTime,
+            count = count
+        )
+    }
 }

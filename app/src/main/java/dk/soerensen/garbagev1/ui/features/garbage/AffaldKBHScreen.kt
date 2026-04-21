@@ -13,6 +13,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import dk.soerensen.garbagev1.R
 import dk.soerensen.garbagev1.ui.components.AppTopBar
 import dk.soerensen.garbagev1.ui.components.NavigationType
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,7 +36,12 @@ fun AffaldKBHScreen(
                 WebView(context).apply {
                     webViewClient = WebViewClient()
                     settings.javaScriptEnabled = true
-                    loadUrl("https://affald.kk.dk/")
+                    val url = if (Locale.getDefault().language == "en") {
+                        "https://international.kk.dk/live/housing/recycling-in-copenhagen"
+                    } else {
+                        "https://affald.kk.dk/"
+                    }
+                    loadUrl(url)
                 }
             }
         )
