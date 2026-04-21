@@ -11,12 +11,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
-
+import dk.soerensen.garbagev1.data.worker.PeriodicRecyclingReminderWorker
 import dk.soerensen.garbagev1.domain.Theme
 import dk.soerensen.garbagev1.ui.features.settings.SettingsViewModel
 import dk.soerensen.garbagev1.ui.navigation.MainNavigation
 import dk.soerensen.garbagev1.ui.theme.GarbageV1Theme
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -25,6 +29,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        schedulePeriodicRecyclingReminder()
 
         setContent {
             val uiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
@@ -46,5 +52,17 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun schedulePeriodicRecyclingReminder() {
+        val workRequest = PeriodicWorkRequestBuilder<PeriodicRecyclingReminderWorker>(
+            1, TimeUnit.DAYS
+        ).build()
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "periodic_recycling_reminder",
+            ExistingPeriodicWorkPolicy.KEEP,
+            workRequest
+        )
     }
 }

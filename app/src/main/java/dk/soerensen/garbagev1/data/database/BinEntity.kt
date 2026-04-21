@@ -8,7 +8,7 @@ data class BinEntity(
     var description: String = "",
     var imageUrl: String = "",
     var lastPickupTime: Long = 0L,
-    val count: Int = 0,
+    var count: Int = 0,
     @get:PropertyName("title_da") @set:PropertyName("title_da")
     var titleDa: String = "",
     @get:PropertyName("title_en") @set:PropertyName("title_en")

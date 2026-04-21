@@ -9,36 +9,21 @@ import dagger.assisted.AssistedInject
 import dk.soerensen.garbagev1.R
 import dk.soerensen.garbagev1.data.notification.NotificationHelper
 import dk.soerensen.garbagev1.domain.BinRepository
-import dk.soerensen.garbagev1.domain.RecyclingStationRepository
 import kotlinx.coroutines.flow.first
 
 @HiltWorker
-class SmartGeofenceWorker @AssistedInject constructor(
+class PeriodicRecyclingReminderWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted params: WorkerParameters,
-    private val binRepository: BinRepository,
-    private val recyclingStationRepository: RecyclingStationRepository
+    private val binRepository: BinRepository
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
-        val stationId = inputData.getString("stationId")
-
-        val stations = recyclingStationRepository.getRecyclingStations().first()
-        val station = stations.find { it.id == stationId } ?: return Result.success()
-
-        val acceptedTypes = station.bins.map { normalizeWasteType(it) }.toSet()
-
         val bins = binRepository.getBins().first()
         val now = System.currentTimeMillis()
         val weekMs = 7L * 24 * 60 * 60 * 1000
 
-        val overdueBins = bins.filter { bin ->
-            val isOverdue = now - bin.lastPickupTime > weekMs
-            val isAccepted = acceptedTypes.any { accepted ->
-                accepted == normalizeWasteType(bin.id) || accepted == normalizeWasteType(bin.title)
-            }
-            isOverdue && isAccepted
-        }
+        val overdueBins = bins.filter { bin -> now - bin.lastPickupTime > weekMs }
 
         if (overdueBins.isNotEmpty()) {
             val message = if (overdueBins.size == 1) {

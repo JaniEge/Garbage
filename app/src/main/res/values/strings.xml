@@ -38,7 +38,9 @@
     <string name="error_text">Fejl</string>
     <string name="retry_button">Prøv igen</string>
     <string name="recycled_count_format">Genbrugt %1$d gange</string>
-    <string name="address_format">Adresse: %1$s</string>
+    <string name="notification_overdue_single">Husk at genbruge: %1$s ♻️</string>
+    <string name="notification_overdue_multiple">%1$d beholdere er klar til genbrug ♻️</string>
+    <string name="category_format">Kategori: %1$s</string>
     <string name="bin_image_content_description">%1$s etiket</string>
     <string name="track_recycling">Registrér genbrug</string>
     <string name="enable_location_title">Aktivér placeringsadgang</string>
