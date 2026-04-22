@@ -28,7 +28,10 @@ class RecyclingViewModel @Inject constructor(
         val availableBinTypes: List<String> = emptyList(),
         val selectedBinFilters: Set<String> = emptySet(),
         val isLoading: Boolean = false,
-        val error: String? = null
+        val error: String? = null,
+        val hasLocationPermission: Boolean = false,
+        val userLocationLat: Double? = null,
+        val userLocationLng: Double? = null
     )
 
     private val _uiState = MutableStateFlow(UiState())
@@ -68,10 +71,15 @@ class RecyclingViewModel @Inject constructor(
                         .map { normalizeBinType(it) }
                         .distinct()
                         .sorted()
-                    _uiState.update {
-                        it.copy(
+                    _uiState.update { state ->
+                        state.copy(
                             stations = stations,
-                            filteredStations = stations,
+                            filteredStations = applyFiltersAndSort(
+                                stations = stations,
+                                filters = state.selectedBinFilters,
+                                lat = state.userLocationLat,
+                                lng = state.userLocationLng
+                            ),
                             availableBinTypes = binTypes,
                             isLoading = false
                         )
@@ -83,6 +91,47 @@ class RecyclingViewModel @Inject constructor(
         geofenceManager.registerGeofences(uiState.value.stations)
     }
 
+    fun updateUserLocation(lat: Double, lng: Double) {
+        _uiState.update { state ->
+            state.copy(
+                hasLocationPermission = true,
+                userLocationLat = lat,
+                userLocationLng = lng,
+                filteredStations = applyFiltersAndSort(
+                    stations = state.stations,
+                    filters = state.selectedBinFilters,
+                    lat = lat,
+                    lng = lng
+                )
+            )
+        }
+    }
+
+    private fun applyFiltersAndSort(
+        stations: List<RecyclingStation>,
+        filters: Set<String>,
+        lat: Double?,
+        lng: Double?
+    ): List<RecyclingStation> {
+        val filtered = if (filters.isEmpty()) {
+            stations
+        } else {
+            val normalizedFilters = filters.map { it.trim().lowercase() }.toSet()
+            stations.filter { station ->
+                station.bins.any { bin -> bin.trim().lowercase() in normalizedFilters }
+            }
+        }
+        return if (lat != null && lng != null) {
+            filtered.sortedBy { station ->
+                val results = FloatArray(1)
+                android.location.Location.distanceBetween(lat, lng, station.latitude, station.longitude, results)
+                results[0]
+            }
+        } else {
+            filtered
+        }
+    }
+
     fun toggleBinFilter(binType: String) {
         _uiState.update { state ->
             val newFilters = if (binType in state.selectedBinFilters) {
@@ -90,17 +139,14 @@ class RecyclingViewModel @Inject constructor(
             } else {
                 state.selectedBinFilters + binType
             }
-            val filtered = if (newFilters.isEmpty()) {
-                state.stations
-            } else {
-                val normalizedFilters = newFilters.map { it.trim().lowercase() }.toSet()
-                state.stations.filter { station ->
-                    station.bins.any { bin -> bin.trim().lowercase() in normalizedFilters }
-                }
-            }
             state.copy(
                 selectedBinFilters = newFilters,
-                filteredStations = filtered
+                filteredStations = applyFiltersAndSort(
+                    stations = state.stations,
+                    filters = newFilters,
+                    lat = state.userLocationLat,
+                    lng = state.userLocationLng
+                )
             )
         }
     }
@@ -109,7 +155,12 @@ class RecyclingViewModel @Inject constructor(
         _uiState.update { state ->
             state.copy(
                 selectedBinFilters = emptySet(),
-                filteredStations = state.stations
+                filteredStations = applyFiltersAndSort(
+                    stations = state.stations,
+                    filters = emptySet(),
+                    lat = state.userLocationLat,
+                    lng = state.userLocationLng
+                )
             )
         }
     }

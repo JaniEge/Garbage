@@ -40,7 +40,11 @@
     <string name="recycled_count_format">Recycled %1$d times</string>
     <string name="notification_overdue_single">Remember to recycle: %1$s ♻️</string>
     <string name="notification_overdue_multiple">%1$d bins ready for recycling ♻️</string>
+    <string name="address_format">Address: %1$s</string>
     <string name="category_format">Category: %1$s</string>
+    <string name="allow_location_sorting">Allow location sorting</string>
+    <string name="location_sorting_enabled">Sorted by distance ✓</string>
+    <string name="location_permission_denied">Location not permitted</string>
     <string name="bin_image_content_description">%1$s label</string>
     <string name="track_recycling">Track Recycling</string>
     <string name="enable_location_title">Enable Location Access</string>

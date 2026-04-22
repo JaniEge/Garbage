@@ -1,5 +1,7 @@
 package dk.soerensen.garbagev1.ui.features.recycling
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,6 +23,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import dk.soerensen.garbagev1.R
 import dk.soerensen.garbagev1.domain.Bin
 import dk.soerensen.garbagev1.domain.RecyclingStation
@@ -42,6 +46,32 @@ fun RecyclingScreen(
 
     // 🔥 NEW: permission dialog state
     var showPermissionDialog by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+
+    // Helper to fetch the current location and update the ViewModel
+    fun fetchAndUpdateLocation() {
+        try {
+            val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null)
+                .addOnSuccessListener { location ->
+                    if (location != null) {
+                        viewModel.updateUserLocation(location.latitude, location.longitude)
+                    }
+                }
+        } catch (_: SecurityException) {
+            // Permission was revoked while app was running; sorting remains unchanged
+        }
+    }
+
+    // Location permission launcher for foreground location sorting
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            fetchAndUpdateLocation()
+        }
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -133,11 +163,36 @@ fun RecyclingScreen(
             }
 
             // --- 📍 STATIONER ---
-            Text(
-                text = stringResource(R.string.nearest_stations),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.nearest_stations),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                TextButton(
+                    onClick = {
+                        if (uiState.hasLocationPermission) {
+                            fetchAndUpdateLocation()
+                        } else {
+                            locationPermissionLauncher.launch(android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                        }
+                    },
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = if (uiState.hasLocationPermission)
+                            stringResource(R.string.location_sorting_enabled)
+                        else
+                            stringResource(R.string.allow_location_sorting),
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+            }
 
             when {
                 uiState.isLoading -> {
