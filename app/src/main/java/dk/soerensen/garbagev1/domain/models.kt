@@ -1,6 +1,5 @@
 package dk.soerensen.garbagev1.domain
 
-import dk.soerensen.garbagev1.data.GarbageItemDto
 import java.util.UUID
 
 data class GarbageItem(
@@ -36,15 +35,3 @@ enum class Theme {
     LIGHT,
     DARK
 }
-
-fun GarbageItem.toDto(): GarbageItemDto =
-    GarbageItemDto(
-        id = this.id,
-        name = this.name,
-        bin = this.bin,
-        description = this.description,
-        imageUri = this.imageUri
-    )
-
-fun GarbageItem.fullDescription(): String =
-    "${name.trim()} → ${bin.trim()}"
