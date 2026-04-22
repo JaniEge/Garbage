@@ -28,7 +28,10 @@ class RecyclingViewModel @Inject constructor(
         val availableBinTypes: List<String> = emptyList(),
         val selectedBinFilters: Set<String> = emptySet(),
         val isLoading: Boolean = false,
-        val error: String? = null
+        val error: String? = null,
+        val userLatitude: Double? = null,
+        val userLongitude: Double? = null,
+        val locationSortingEnabled: Boolean = false
     )
 
     private val _uiState = MutableStateFlow(UiState())
@@ -83,6 +86,33 @@ class RecyclingViewModel @Inject constructor(
         geofenceManager.registerGeofences(uiState.value.stations)
     }
 
+    fun setUserLocation(lat: Double, lon: Double) {
+        _uiState.update { state ->
+            state.copy(
+                userLatitude = lat,
+                userLongitude = lon,
+                locationSortingEnabled = true,
+                filteredStations = sortByLocation(state.filteredStations, lat, lon)
+            )
+        }
+    }
+
+    private fun sortByLocation(
+        stations: List<RecyclingStation>,
+        lat: Double,
+        lon: Double
+    ): List<RecyclingStation> {
+        return stations.sortedBy { station ->
+            val results = FloatArray(1)
+            android.location.Location.distanceBetween(
+                lat, lon,
+                station.latitude, station.longitude,
+                results
+            )
+            results[0]
+        }
+    }
+
     fun toggleBinFilter(binType: String) {
         _uiState.update { state ->
             val newFilters = if (binType in state.selectedBinFilters) {
@@ -90,13 +120,16 @@ class RecyclingViewModel @Inject constructor(
             } else {
                 state.selectedBinFilters + binType
             }
-            val filtered = if (newFilters.isEmpty()) {
+            var filtered = if (newFilters.isEmpty()) {
                 state.stations
             } else {
                 val normalizedFilters = newFilters.map { it.trim().lowercase() }.toSet()
                 state.stations.filter { station ->
                     station.bins.any { bin -> bin.trim().lowercase() in normalizedFilters }
                 }
+            }
+            if (state.locationSortingEnabled && state.userLatitude != null && state.userLongitude != null) {
+                filtered = sortByLocation(filtered, state.userLatitude, state.userLongitude)
             }
             state.copy(
                 selectedBinFilters = newFilters,
@@ -107,9 +140,13 @@ class RecyclingViewModel @Inject constructor(
 
     fun clearFilters() {
         _uiState.update { state ->
+            var stations = state.stations
+            if (state.locationSortingEnabled && state.userLatitude != null && state.userLongitude != null) {
+                stations = sortByLocation(stations, state.userLatitude, state.userLongitude)
+            }
             state.copy(
                 selectedBinFilters = emptySet(),
-                filteredStations = state.stations
+                filteredStations = stations
             )
         }
     }
