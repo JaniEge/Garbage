@@ -19,6 +19,8 @@ class ItemRepositoryImpl @Inject constructor(
 
     private val itemsCollection = firestore.collection("items")
 
+    private fun isDanish(): Boolean = Locale.getDefault().language == "da"
+
     override fun getItems(): Flow<List<GarbageItem>> = callbackFlow {
         val subscription = itemsCollection.addSnapshotListener { snapshot, _ ->
             if (snapshot != null) {
@@ -60,27 +62,28 @@ class ItemRepositoryImpl @Inject constructor(
         val q = name.trim().lowercase()
         if (q.isBlank()) return null
 
-        val isDanish = Locale.getDefault().language == "da"
-
-        // Preferred: query by normalized titleKey_da / titleKey_en (case-insensitive)
-        val titleKeyField = if (isDanish) "titleKey_da" else "titleKey_en"
-        val preferredQuery = itemsCollection.whereEqualTo(titleKeyField, q).get().await()
-        val preferredBinId = preferredQuery.documents.firstOrNull()?.getString("binId")
-        if (preferredBinId != null) return preferredBinId
-
-        // Fallback: query by title / title_en with TitleCase
-        val titleField = if (isDanish) "title" else "title_en"
-        val fallbackQuery = itemsCollection.whereEqualTo(titleField, q.toTitleCase()).get().await()
-        return fallbackQuery.documents.firstOrNull()?.getString("binId")
+        val snapshot = itemsCollection.get().await()
+        return snapshot.toObjects(ItemEntity::class.java).firstOrNull { entity ->
+            val compareTitle = if (isDanish()) {
+                entity.title
+            } else {
+                entity.titleEn.ifBlank { entity.title }
+            }
+            compareTitle.trim().lowercase() == q
+        }?.binId
     }
 
     // --- Hjælpefunktioner til konvertering ---
 
+    private fun getLocalizedText(da: String, en: String): String {
+        return if (isDanish()) da.ifBlank { en } else en.ifBlank { da }
+    }
+
     private fun ItemEntity.toItem() = GarbageItem(
         id = id,
-        name = title,
+        name = getLocalizedText(title, titleEn),
         bin = binId,
-        description = description,
+        description = getLocalizedText(description, descriptionEn),
         imageUri = imageUri
     )
 

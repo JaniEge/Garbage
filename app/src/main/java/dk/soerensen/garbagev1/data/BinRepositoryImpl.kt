@@ -59,20 +59,17 @@ class BinRepositoryImpl @Inject constructor(
 
     // --- Hjælpefunktioner til konvertering ---
 
-    private fun resolveField(primary: String, legacy: String, fallback: String): String =
-        primary.ifBlank { legacy.ifBlank { fallback } }
-
     private fun BinEntity.toBin(): Bin {
         val danish = useDanish()
         val resolvedTitle = if (danish) {
-            resolveField(titleDa, title, titleEn)
+            title.ifBlank { titleEn }
         } else {
-            resolveField(titleEn, title, titleDa)
+            titleEn.ifBlank { title }
         }
         val resolvedDescription = if (danish) {
-            resolveField(descriptionDa, description, descriptionEn)
+            description.ifBlank { descriptionEn }
         } else {
-            resolveField(descriptionEn, description, descriptionDa)
+            descriptionEn.ifBlank { description }
         }
         return Bin(
             id = id,
