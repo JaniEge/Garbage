@@ -4,10 +4,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dk.soerensen.garbagev1.domain.BinRepository
 import dk.soerensen.garbagev1.domain.ItemRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -16,12 +18,15 @@ import javax.inject.Inject
 @HiltViewModel
 class GarbageSortingViewModel @Inject constructor(
     private val repository: ItemRepository,
+    private val binRepository: BinRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     data class UiState(
         val query: String = "",
-        val result: String = ""
+        val resultItemName: String? = null,
+        val resultBinTitle: String? = null,
+        val notFound: Boolean = false
     )
 
     sealed interface NavigationEvent {
@@ -39,20 +44,23 @@ class GarbageSortingViewModel @Inject constructor(
 
     fun onQueryChanged(value: String) {
         savedStateHandle["query"] = value
-        _uiState.update { it.copy(query = value) }
+        _uiState.update { it.copy(query = value, resultItemName = null, resultBinTitle = null, notFound = false) }
     }
 
     fun onWhereClicked() {
         val q = uiState.value.query.trim()
         viewModelScope.launch {
-            val bin = repository.findBin(q)
-            val resultText = if (bin != null) {
-                "$q should be placed in: $bin"
+            val binId = repository.findBin(q)
+            if (binId != null) {
+                val bin = binRepository.getBin(binId).firstOrNull()
+                // Fall back to binId if bin is not found in repository or title is missing
+                val binTitle = bin?.title ?: binId
+                savedStateHandle["query"] = ""
+                _uiState.update { it.copy(query = "", resultItemName = q, resultBinTitle = binTitle, notFound = false) }
             } else {
-                "Item not found"
+                savedStateHandle["query"] = ""
+                _uiState.update { it.copy(query = "", resultItemName = null, resultBinTitle = null, notFound = true) }
             }
-            savedStateHandle["query"] = ""
-            _uiState.update { it.copy(query = "", result = resultText) }
         }
     }
 

@@ -60,8 +60,11 @@ fun GarbageSortingScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                if (state.result.isNotBlank()) {
-                    Text(state.result)
+                if (state.resultItemName != null && state.resultBinTitle != null) {
+                    Text(stringResource(R.string.result_found, state.resultItemName, state.resultBinTitle))
+                    Spacer(modifier = Modifier.height(12.dp))
+                } else if (state.notFound) {
+                    Text(stringResource(R.string.item_not_found))
                     Spacer(modifier = Modifier.height(12.dp))
                 }
 

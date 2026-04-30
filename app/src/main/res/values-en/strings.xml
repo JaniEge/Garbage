@@ -56,4 +56,6 @@
     <string name="gallery_button">Gallery</string>
     <string name="selected_image_content_description">Selected image</string>
     <string name="item_image_content_description">Item image</string>
+    <string name="result_found">%1$s should be placed in: %2$s</string>
+    <string name="item_not_found">Item not found</string>
 </resources>

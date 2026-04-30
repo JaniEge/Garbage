@@ -56,4 +56,6 @@
     <string name="gallery_button">Galleri</string>
     <string name="selected_image_content_description">Valgt billede</string>
     <string name="item_image_content_description">Item billede</string>
+    <string name="result_found">%1$s skal smides i: %2$s</string>
+    <string name="item_not_found">Genstand ikke fundet</string>
 </resources>

@@ -8,6 +8,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -59,9 +60,18 @@ class ItemRepositoryImpl @Inject constructor(
         val q = name.trim().lowercase()
         if (q.isBlank()) return null
 
-        // Simpel søgning i Firestore (kræver nøjagtigt match eller manuel filtrering)
-        val query = itemsCollection.whereEqualTo("name", q.toTitleCase()).get().await()
-        return query.documents.firstOrNull()?.getString("bin")
+        val isDanish = Locale.getDefault().language == "da"
+
+        // Preferred: query by normalized titleKey_da / titleKey_en (case-insensitive)
+        val titleKeyField = if (isDanish) "titleKey_da" else "titleKey_en"
+        val preferredQuery = itemsCollection.whereEqualTo(titleKeyField, q).get().await()
+        val preferredBinId = preferredQuery.documents.firstOrNull()?.getString("binId")
+        if (preferredBinId != null) return preferredBinId
+
+        // Fallback: query by title / title_en with TitleCase
+        val titleField = if (isDanish) "title" else "title_en"
+        val fallbackQuery = itemsCollection.whereEqualTo(titleField, q.toTitleCase()).get().await()
+        return fallbackQuery.documents.firstOrNull()?.getString("binId")
     }
 
     // --- Hjælpefunktioner til konvertering ---
