@@ -1,5 +1,10 @@
 package dk.soerensen.garbagev1.ui.features.recycling
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,15 +23,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.google.android.gms.location.LocationServices
 import dk.soerensen.garbagev1.R
 import dk.soerensen.garbagev1.domain.Bin
 import dk.soerensen.garbagev1.domain.RecyclingStation
 import dk.soerensen.garbagev1.ui.components.AppTopBar
 import dk.soerensen.garbagev1.ui.components.NavigationType
 
+@SuppressLint("MissingPermission")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecyclingScreen(
@@ -35,6 +43,7 @@ fun RecyclingScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val bins by viewModel.bins.collectAsStateWithLifecycle(initialValue = emptyList())
+    val context = LocalContext.current
 
     var selectedBin by remember { mutableStateOf<Bin?>(null) }
     var showSheet by remember { mutableStateOf(false) }
@@ -42,6 +51,23 @@ fun RecyclingScreen(
 
     // 🔥 NEW: permission dialog state
     var showPermissionDialog by remember { mutableStateOf(false) }
+
+    val fetchLocationAndSort: () -> Unit = {
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                viewModel.setUserLocation(location.latitude, location.longitude)
+            }
+        }
+    }
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            fetchLocationAndSort()
+        }
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -133,11 +159,38 @@ fun RecyclingScreen(
             }
 
             // --- 📍 STATIONER ---
-            Text(
-                text = stringResource(R.string.nearest_stations),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(R.string.nearest_stations),
+                    style = MaterialTheme.typography.titleMedium
+                )
+                TextButton(
+                    onClick = {
+                        if (ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                            ) == PackageManager.PERMISSION_GRANTED
+                        ) {
+                            fetchLocationAndSort()
+                        } else {
+                            locationPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+                        }
+                    },
+                    enabled = !uiState.locationSortingEnabled,
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.allow_location_sorting),
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+            }
 
             when {
                 uiState.isLoading -> {
